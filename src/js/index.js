@@ -1,4 +1,5 @@
   import {App} from './components/App/';
+  import {Temperature} from '../'
 
   new App(document.getElementById('app'));
 
