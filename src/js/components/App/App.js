@@ -8,7 +8,7 @@ export default class App extends Component {
 
     render() {
         const temp1 = document.createElement('div');
-        new Temperature(temp1)
+        new Temperature(temp1, {temperature: 7, units: 'C'})
 
         return ['Some text', temp1];
     }
