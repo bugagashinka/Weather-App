@@ -1,0 +1,240 @@
+/* General styles */
+* {
+  box-sizing: border-box;
+}
+body,
+html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.container {
+  max-width: 980px;
+  height: 600px;
+  margin: 7vw auto;
+  border-radius: 0 0 7px 7px;
+}
+
+.input-search {
+  margin: 30px;
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0);
+  font-size: 2em;
+  color: #fff;
+}
+
+.input-search::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.9em;
+}
+.input-search:hover {
+  pointer-events: none;
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.5); */
+  cursor: default;
+}
+.input-search:focus {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  pointer-events: initial;
+}
+
+.bg-image,
+.target {
+  height: 100%;
+  /* background-image: url('../img/colorado.jpg'); */
+  background-repeat: no-repeat;
+  background-position: top center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+  -webkit-filter: blur(8px);
+  filter: blur(8px);
+}
+
+.target {
+  height: 70%;
+  border-radius: 5px 5px 0 0;
+  -webkit-background-size: 110%;
+  -moz-background-size: 110%;
+  -o-background-size: 110%;
+  background-size: 110%;
+}
+.weather {
+  margin-top: -45px;
+}
+.weather-tab {
+  border-bottom: 6px solid;
+}
+.weather-tab:nth-of-type(1) {
+  border-bottom-color: #f5c650;
+}
+.weather-tab:nth-of-type(2) {
+  border-bottom-color: #99a2e7;
+}
+.weather-tab:nth-of-type(3) {
+  border-bottom-color: #67d1e7;
+}
+.weather-tab {
+  display: inline-block;
+  width: 130px;
+  padding: 10px;
+  text-align: right;
+  line-height: 1.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #ccbfbd;
+  font-size: 0.8em;
+  transition: 0.25s ease-in-out all;
+}
+.weather-tab:hover {
+  font-size: 0.9em;
+  line-height: 1.1em;
+}
+
+.tab-radio {
+  display: none;
+}
+.tab-content {
+  display: none;
+  background-color: rgba(150, 150, 150, 0.5);
+  border-radius: 0 0 7px 7px;
+  /* height: 200px; */
+}
+
+.tab-content-1 {
+  display: none;
+  background-color: rgba(150, 150, 150, 0.5);
+  border-radius: 0 0 7px 7px;
+  /* height: 200px; */
+}
+
+#forecast-tab:checked ~ .forecast-tab,
+#history-tab:checked ~ .history-tab,
+#fav-tab:checked ~ .fav-tab {
+  color: #fff;
+  font-size: 0.9em;
+  line-height: 1.1em;
+}
+
+#forecast-tab:checked ~ .weather-forecast {
+  display: table;
+}
+
+#history-tab:checked ~ .weather-history,
+#fav-tab:checked ~ .weather-favorite {
+  display: block;
+}
+
+.day {
+  /* display: inline-block;
+  width: 15%;
+  height: 100%; */
+  text-align: center;
+}
+.day:nth-of-type(n + 2) {
+  border-left: 1px solid #99918e;
+}
+.day-title {
+  display: inline-block;
+  margin-top: 50px;
+  padding: 6px 17px;
+  border-radius: 15px;
+  background-color: rgba(157, 143, 132, 0.5);
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.weather-forecast {
+  width: 100%;
+}
+.day {
+  display: table-cell;
+  width: 1%;
+  transition: 0.6s ease-in-out all;
+  overflow: hidden;
+  position: relative;
+  min-width: 150px;
+}
+
+.day:hover {
+  width: 100%;
+}
+
+/* .day-1:hover {
+  flex: 3;
+} */
+
+.weather-forecast-1 {
+  display: flex;
+}
+
+.day-1:nth-of-type(n + 2) {
+  border-left: 1px solid #99918e;
+}
+.day-title-1 {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 6px 17px;
+  border-radius: 15px;
+  background-color: rgba(157, 143, 132, 0.5);
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.day-1 {
+  display: flex;
+  height: 200px;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+  color: #fff;
+  transition: font-size 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11),
+    flex 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11);
+}
+
+.day-1 > * {
+  flex: 1 0 auto;
+}
+
+.day-1.open {
+  position: relative;
+  flex: 3;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+.open .day-title-1 {
+}
+
+.open .temp-unit {
+  font-size: 0.5em;
+  vertical-align: top;
+}
+.open .day-temp {
+  font-size: 6em;
+}
+
+.open .day-icon {
+  font-size: 3em;
+}
+.day-temp {
+  font-size: 1.3em;
+}
+
+@media screen and (max-width: 980px) {
+  .container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
