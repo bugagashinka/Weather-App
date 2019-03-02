@@ -2,7 +2,7 @@
   "name": "weather-app-h",
   "version": "1.0.0",
   "main": "./index.html",
-  "repository": "https://github.com/bugagashinka/weather-app-h",
+  "repository": "https://github.com/bugagashinka/weather-app",
   "author": "bugagashinka <Voloshyn.Andrew@gmail.com>",
   "license": "MIT",
   "scripts": {
