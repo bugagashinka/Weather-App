@@ -10,6 +10,16 @@ export default class App extends Component {
         const temp1 = document.createElement('div');
         new Temperature(temp1, {temperature: 7, units: 'C'})
 
-        return ['Some text', temp1];
+        return [
+            'Some text', 
+            temp1,
+            {
+                tag: Temperature,
+                props: {
+                    temperature: 100,
+                    units: "F",
+                }
+            }
+        ];
     }
 }

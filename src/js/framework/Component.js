@@ -15,19 +15,20 @@ export default class Component {
             console.log("Content as array = ", content);
             content.map(item => {
                 if (typeof item === 'string') {
-                    console.log('Handle string item ', item);
                     const divElement = document.createElement('div');
                     divElement.innerHTML = item;
                     return divElement;
                 } else {
-                    console.log('Handle item as component');
+                    if (typeof item.tag === 'function') {
+                        const container = document.createElement('div');
+                        new item.tag(container, item.props);
+                        return container;
+                    }
                     return item;
                 }
             })
             .forEach(element => {
-                console.log('---------iterate ', element);
                 this.host.appendChild(element);
-                console.log(this.host);
             });
         }
     }
