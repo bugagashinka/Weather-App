@@ -1,99 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Weather App</title>
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="./css/main.css" />
-  </head>
-  <body>
-    <main id="app">
-    <div class="bg-image"></div>
 
-    <div class="container">
-        <!-- Weather of target (city/coordinates) -->
-        <section class="target">
-          <input
-            type="text"
-            class="input-search"
-            placeholder="Search for city or coordinates"
-          />
-  
-          <div class="location">
-            <span class="loc-city"></span>
-            <span class="loc-coordinate"></span>
-            <span class="loc-date"></span>
-          </div>
-        </section>
-  
-        <!-- Weather block -->
-        <section class="weather">
-          <!-- Tabs -->
-          <input
-            id="forecast-tab"
-            class="tab-radio"
-            type="radio"
-            name="tabs"
-            checked
-          />
-          <label for="forecast-tab" class="weather-tab forecast-tab"
-            >Weather</label
-          >
-  
-          <input id="history-tab" class="tab-radio" type="radio" name="tabs" />
-          <label for="history-tab" class="weather-tab history-tab">History</label>
-  
-          <input id="fav-tab" class="tab-radio" type="radio" name="tabs" />
-          <label for="fav-tab" class="weather-tab fav-tab">Favorites</label>
-          <!--  -->
-  
-          <!-- Target forecast tab content -->
-          <section class="tab-content-1 weather-forecast-1">
-            <div class="day-1 open">
-              
-              <div class="detail"><span class="day-title-1">Monday 27</span></div>
-              <!-- <div><span>4mph</span> / <span>Preassure</span> / <span>humidity</span></div> -->
-              <div>TEST</div>
-              <div class="icon"><span class="day-icon">ICON</span></div>
-              <div>
-                <span class="day-temp">62<span class="temp-unit">°</span></span>
-              </div>
-            </div>
-            <div class="day-1">
-              <div><span class="day-title-1">Tue</span></div>
-              <div><span class="day-icon">ICON</span></div>
-              <div></div><span class="day-temp">62</span></div>
-            </div>
-            <div class="day-1">
-              <div><span class="day-title-1">Mon</span></div>
-              <div><span class="day-icon">ICON</span></div>
-              <span class="day-temp">62</span>
-            </div>
-            <div class="day-1">
-              <div><span class="day-title-1">Mon</span></div>
-              <div><span class="day-icon">ICON</span></div>
-              <span class="day-temp">62</span>
-            </div>
-            <div class="day-1">
-              <div><span class="day-title-1">Mon</span></div>
-              <div><span class="day-icon">ICON</span></div>
-              <span class="day-temp">62</span>
-            </div>
-          </section>
-  
-          <!-- Search history tab content -->
-          <section class="tab-content weather-history">
-            Search history list
-          </section>
-  
-          <!-- Favorite targets tab content -->
-          <section class="tab-content weather-favorite">Favorite targets</section>
-        </section>
-        <!--  -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Weather App</title>
+  <link href="./assets/style/normalize.css" rel="stylesheet" />
+  <link href="./assets/style/main.css" rel="stylesheet" />
+  <link href="./assets/style/weather-icons.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <main id="app" class="container">
+    <div class="bg-image"></div>
+    <!-- Weather of target (city/coordinates) -->
+    <section class="target">
+      <input type="text" class="input-search" placeholder="Search for city or coordinates" />
+
+      <div class="location">
+        <span class="loc-city"></span>
+        <span class="loc-coordinate"></span>
+        <span class="loc-date"></span>
       </div>
-   </main>
-    <script src="./js/index.js"></script>
-  </body>
+    </section>
+
+    <!-- Weather block -->
+    <section class="weather">
+      <!-- Tabs -->
+      <input id="forecast-tab" class="tab-radio" type="radio" name="tabs" checked />
+      <label for="forecast-tab" class="weather-tab forecast-tab">Weather</label>
+
+      <input id="history-tab" class="tab-radio" type="radio" name="tabs" />
+      <label for="history-tab" class="weather-tab history-tab">History</label>
+
+      <input id="fav-tab" class="tab-radio" type="radio" name="tabs" />
+      <label for="fav-tab" class="weather-tab fav-tab">Favorites</label>
+      <!--  -->
+
+      <!-- Target forecast tab content -->
+      <section class="tab-content weather-forecast">
+        <div class="forecast-item open">
+          <div class="item-detail">
+            <span class="item-day">Monday 27<sup>th</sup></span>
+            <div class="detail-weather">
+              <span>4mph</span> / <span>Preassure</span> /
+              <span>humidity</span>
+            </div>
+          </div>
+          <div class="item-base">
+            <div class="item-icon"><i class="wi wi-day-cloudy"></i></div>
+            <div>
+              <span class="item-temp">62<span class="item-unit">°</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-item">
+          <div class="item-detail">
+            <span class="item-day">Tue<sup>th</sup></span>
+            <div class="detail-weather">
+              <span>4mph</span> / <span>Preassure</span> /
+              <span>humidity</span>
+            </div>
+          </div>
+          <div class="item-base">
+            <div class="item-icon"><i class="wi wi-day-cloudy"></i></div>
+            <div>
+              <span class="item-temp">62<span class="item-unit">°</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-item">
+          <div class="item-detail">
+            <span class="item-day">Wed<sup>th</sup></span>
+            <div class="detail-weather">
+              <span>4mph</span> / <span>Preassure</span> /
+              <span>humidity</span>
+            </div>
+          </div>
+          <div class="item-base">
+            <div class="item-icon"><i class="wi wi-day-cloudy"></i></div>
+            <div>
+              <span class="item-temp">62<span class="item-unit">°</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-item">
+          <div class="item-detail">
+            <span class="item-day">Thu<sup>th</sup></span>
+            <div class="detail-weather">
+              <span>4mph</span> / <span>Preassure</span> /
+              <span>humidity</span>
+            </div>
+          </div>
+          <div class="item-base">
+            <div class="item-icon"><i class="wi wi-day-cloudy"></i></div>
+            <div>
+              <span class="item-temp">62<span class="item-unit">°</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="forecast-item">
+          <div class="item-detail">
+            <span class="item-day">Fri<sup>th</sup></span>
+            <div class="detail-weather">
+              <span>4mph</span> / <span>Preassure</span> /
+              <span>humidity</span>
+            </div>
+          </div>
+          <div class="item-base">
+            <div class="item-icon"><i class="wi wi-day-cloudy"></i></div>
+            <div>
+              <span class="item-temp">62<span class="item-unit">°</span></span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Search history tab content -->
+      <section class="tab-content weather-history">
+        Search history list
+      </section>
+
+      <!-- Favorite targets tab content -->
+      <section class="tab-content weather-favorite">Favorite targets</section>
+    </section>
+    <!--  -->
+  </main>
+  <script src="./js/index.js"></script>
+</body>
 </html>
