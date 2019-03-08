@@ -9,7 +9,7 @@ export default class TabsPanel extends Component {
 
   render() {
     return [
-      '<Tab id="forecast-tab" title="Weather" checked="true"/>',
+      '<Tab id="forecast-tab" title="Weather" checked="checked"/>',
       '<Tab id="history-tab" title="History"/>',
       '<Tab id="fav-tab" title="Favorites"/>'
     ];

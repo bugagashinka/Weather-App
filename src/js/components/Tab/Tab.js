@@ -7,17 +7,20 @@ export default class Tab extends Component {
   }
 
   render() {
+    console.log("afro", this.props.checked);
     return [
       `<input id="${this.props.id}" 
         class="tab-radio" 
         type="radio" 
-        name="tabs" />`,
+        name="tabs" 
+        ${this.props.checked === "checked" ? "checked='checked'" : ""}
+        />`,
       `<label for="${this.props.id}"
         class="weather-tab fav-tab">${this.props.title}
         </label>`
     ];
   }
 }
-//    ${this.props.checked === "true" ? " checked" : ""}
+//
 
 classes["Tab"] = Tab;
