@@ -21,7 +21,6 @@ body.addEventListener("mousemove", e => {
 const STORAGE_IMG_KEY = "lastImg";
 const storage = window.localStorage;
 
-// const imgArr = ["kyiv,ua", "florida,usa", "colorado,usa", "nyc,usa"];
 const imgArr = [colorado, nyc, kyiv, florida];
 
 const shuffle = arr => {
@@ -35,5 +34,4 @@ const lastImg = storage.getItem(STORAGE_IMG_KEY);
 const randImg = lastImg === randImgArr[0] ? randImgArr[1] : randImgArr[0];
 bgImage.style.backgroundImage = `url('${randImg}')`;
 target.style.backgroundImage = `url('${randImg}')`;
-// target.style.backgroundImage = `url('./assets/img/${randImg}.jpg')`;
 storage.setItem(STORAGE_IMG_KEY, randImg);

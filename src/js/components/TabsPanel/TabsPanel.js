@@ -8,11 +8,11 @@ export default class TabsPanel extends Component {
   }
 
   render() {
-    return `<div>
-        <Tab id="forecast-tab" title="Weather" checked="true"/>
-        <Tab id="history-tab" title="History"/>
-        <Tab id="fav-tab" title="Favorites"/>
-      </div>`;
+    return [
+      '<Tab id="forecast-tab" title="Weather" checked="true"/>',
+      '<Tab id="history-tab" title="History"/>',
+      '<Tab id="fav-tab" title="Favorites"/>'
+    ];
   }
 }
 

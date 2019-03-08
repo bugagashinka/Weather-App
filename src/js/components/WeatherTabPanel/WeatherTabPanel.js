@@ -13,12 +13,11 @@ export default class WeatherTabPanel extends Component {
 
   render() {
     return `<section class="weather">
-    <TabsPanel/>
-    <WeatherForecast/>
-    <FavouriteLocations/>
-    <SearchHistory/>
+      <TabsPanel/>
+      <WeatherForecast/>
+      <FavouriteLocations/>
+      <SearchHistory/>
     </section>`;
-    // return `<TabsPanel/>`;
   }
 }
 
