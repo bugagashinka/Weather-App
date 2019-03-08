@@ -6,7 +6,7 @@ export default class Temperature extends Component {
     super(host, props);
   }
   render() {
-    return "asdasd";
+    return "<div>asdasd</div>";
     // return "Temperature " + this.props.temperature + "&deg;" + this.props.units;
     // return "<div class='temperature'></div>";
   }

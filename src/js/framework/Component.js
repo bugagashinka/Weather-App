@@ -24,6 +24,7 @@ const getElementAttr = element => {
 const htmlElementToVirtualDomPrototype = htmlElement => {
   let elementProto;
   if (htmlElement.nodeName === "#text") {
+    if (htmlElement.data.trim() == "") return null;
     elementProto = {
       tag: "span",
       content: htmlElement.data
@@ -67,7 +68,7 @@ export default class Component {
   }
   _render() {
     console.log("====", ProxyClass);
-    this.host.innerHTML = "";
+    // this.host.innerHTML = "";
     let content = this.render();
 
     if (typeof content === "string") {
@@ -105,11 +106,13 @@ export default class Component {
   ) {
     if (element.tag) {
       if (ProxyClass.isClass(element.tag) && parent) {
+        console.log("It's component");
         const props = attrToPropsFormat(element.attributes);
         new ProxyClass.createInstance(element.tag, parent, props);
         return parent;
       }
       // string
+      console.log("It's not component");
       const container = document.createElement(element.tag);
       if (element.content) {
         container.innerHTML = element.content;
@@ -134,6 +137,7 @@ export default class Component {
       if (element.children) {
         console.log("!!!", element, element.children);
         element.children.forEach(el => {
+          if (!el) return;
           const htmlElement = this._vDomPrototypeElementToHtmlElement(
             el,
             container

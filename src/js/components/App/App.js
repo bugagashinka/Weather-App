@@ -1,8 +1,7 @@
 import Component from "../../framework/Component";
-import { Temperature } from "../Temperature";
-import { SearchBar } from "../SearchBar";
-import { CurrentWeather } from "../CurrentWeather";
-import { WeatherForecast } from "../WeatherForecast";
+import "../Temperature";
+import "../SearchBar";
+import "../WeatherTabPanel";
 
 export default class App extends Component {
   constructor(host) {
@@ -10,15 +9,17 @@ export default class App extends Component {
   }
 
   render() {
-    // return "<div>asdsad</div>";
-    // return "<div><section>asdasd</section></div>";
-    // return [
-    //   "<div><WeatherForecast /></div",
-    //   "<div><WeatherForecast /></div",
-    //   "asdasd"
-    // ];
-    return "<Temperature />";
-    // return ["<div><section></section></div>"];
-    // return ["<div></div>", "<i></i>"];
+    return [
+      '<div class="bg-image"></div>',
+      `<section class="target">
+        <SearchBar/>
+        <div class="location">
+          <span class="loc-city"></span>
+          <span class="loc-coordinate"></span>
+          <span class="loc-date"></span>
+        </div>
+      </section>`,
+      "<WeatherTabPanel/>"
+    ];
   }
 }

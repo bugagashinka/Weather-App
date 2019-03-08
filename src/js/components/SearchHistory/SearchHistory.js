@@ -7,7 +7,7 @@ export default class SearchHistory extends Component {
   }
 
   render() {
-    return "";
+    return `<section class="tab-content weather-history">Search history list</section>`;
   }
 }
 

@@ -7,7 +7,7 @@ export default class SearchBar extends Component {
   }
 
   render() {
-    return '<input type="text" class="input-search" placeholder="Search for city or coordinates" />';
+    return `<input type="text" class="input-search" placeholder="Search for city or coordinates" />`;
   }
 }
 
