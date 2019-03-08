@@ -1,4 +1,4 @@
-import { ProxyClass } from "../utils/ProxyClass";
+import ProxyClass from "../utils/ProxyClass";
 
 const PARSE_XML = "text/xml";
 
@@ -21,14 +21,24 @@ const getElementAttr = element => {
 };
 
 //Convert markup to object literals
-const htmlElementToVirtualDomPrototype = (htmlElement, flag = false) => {
-  const elementProto = {
-    tag: `${htmlElement.nodeName}`,
-    attributes: getElementAttr(htmlElement),
-    children: flag
-      ? Array.from(htmlElement.childNodes).map(htmlElementToVirtualDomPrototype)
-      : []
-  };
+const htmlElementToVirtualDomPrototype = htmlElement => {
+  let elementProto;
+  if (htmlElement.nodeName === "#text") {
+    elementProto = {
+      tag: "span",
+      content: htmlElement.data
+    };
+  } else {
+    elementProto = {
+      tag: `${htmlElement.nodeName}`,
+      attributes: getElementAttr(htmlElement),
+      children: htmlElement.childNodes.length
+        ? Array.from(htmlElement.childNodes).map(
+            htmlElementToVirtualDomPrototype
+          )
+        : []
+    };
+  }
   return elementProto;
 };
 
@@ -66,18 +76,15 @@ export default class Component {
 
     const prototypeElements = content.map(item => {
       if (typeof item === "string") {
-        let domNodes = parseHTMLString(content);
+        let domNodes = parseHTMLString(item);
         console.log("!!!", domNodes);
-        return htmlElementToVirtualDomPrototype(
-          domNodes,
-          domNodes.childNodes.length
-        );
+        return htmlElementToVirtualDomPrototype(domNodes);
       }
     });
     console.log(prototypeElements);
 
     prototypeElements
-      .map(item => this._vDomPrototypeElementToHtmlElement(item, null)) // [string|HTMLElement] => [HTMLElement]
+      .map(item => this._vDomPrototypeElementToHtmlElement(item)) // [string|HTMLElement] => [HTMLElement]
       .forEach(htmlElement => {
         this.host.appendChild(htmlElement);
       });
@@ -92,59 +99,52 @@ export default class Component {
    * @param {string|HTMLElement|Object} element
    * @private
    */
-  _vDomPrototypeElementToHtmlElement(element, parent = null) {
+  _vDomPrototypeElementToHtmlElement(
+    element,
+    parent = document.createElement("div")
+  ) {
     if (element.tag) {
-      if (parent) {
-        try {
-          console.log(element.tag);
-          const props = attrToPropsFormat(element.attributes);
-          new ProxyClass(element.tag, parent, props);
-        } catch (err) {
-          console.log(err, "for tag", element.tag);
-        }
-        // if (typeof element.tag === "function") {
-        //   const container = document.createElement("div");
-        //   new element.tag(container, element.props);
-        // return container;
+      if (ProxyClass.isClass(element.tag) && parent) {
+        const props = attrToPropsFormat(element.attributes);
+        new ProxyClass.createInstance(element.tag, parent, props);
         return parent;
-      } else {
-        // string
-        const container = document.createElement(element.tag);
-        if (element.content) {
-          container.innerHTML = element.content;
-        }
+      }
+      // string
+      const container = document.createElement(element.tag);
+      if (element.content) {
+        container.innerHTML = element.content;
+      }
 
-        // ensure following element properties are Array
-        ["classList", "attributes", "children"].forEach(item => {
-          if (element[item] && !Array.isArray(element[item])) {
-            element[item] = [element[item]];
+      // ensure following element properties are Array
+      ["classList", "attributes", "children"].forEach(item => {
+        if (element[item] && !Array.isArray(element[item])) {
+          element[item] = [element[item]];
+        }
+      });
+      if (element.classList) {
+        container.classList.add(...element.classList);
+      }
+      if (element.attributes) {
+        element.attributes.forEach(attributeSpec => {
+          container.setAttribute(attributeSpec.name, attributeSpec.value);
+        });
+      }
+
+      // process children
+      if (element.children) {
+        console.log("!!!", element, element.children);
+        element.children.forEach(el => {
+          const htmlElement = this._vDomPrototypeElementToHtmlElement(
+            el,
+            container
+          );
+          if (htmlElement !== container) {
+            container.appendChild(htmlElement);
           }
         });
-        if (element.classList) {
-          container.classList.add(...element.classList);
-        }
-        if (element.attributes) {
-          element.attributes.forEach(attributeSpec => {
-            container.setAttribute(attributeSpec.name, attributeSpec.value);
-          });
-        }
-
-        // process children
-        if (element.children) {
-          console.log("!!!", element, element.children);
-          element.children.forEach(el => {
-            const htmlElement = this._vDomPrototypeElementToHtmlElement(
-              el,
-              container
-            );
-            console.log("!!!!!!!htmlElement!!!!!!!!", htmlElement);
-            console.log("!!!!!!!container!!!!!!!!", container);
-            // container.appendChild(htmlElement);
-          });
-        }
-
-        return container;
       }
+
+      return container;
     }
     return element;
   }

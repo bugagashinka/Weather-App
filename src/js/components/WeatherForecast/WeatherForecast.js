@@ -12,14 +12,14 @@ export default class WeatherForecast extends Component {
     // return "<div><WeatherForecastItem from='WeatherForecast'/></div>";
     const weatherForecast = WeatherDataService.getWeatherForecast();
     let arr = weatherForecast.map(itemForecast => {
-      return `<div><WeatherForecastItem
+      return `<WeatherForecastItem
       temperature='${itemForecast.main.temp}'
       humidity='${itemForecast.main.humidity}'
       wind='${itemForecast.wind.speed}'
       weekDay='Monday'
       pressure='${itemForecast.main.pressure}'
       unit='metrical;'
-      /></div>`;
+      />`;
     });
     console.log(arr);
     return arr[0];

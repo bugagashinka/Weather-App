@@ -10,7 +10,15 @@ export default class App extends Component {
   }
 
   render() {
-    // return ["<div><WeatherForecast /></div", "<div><WeatherForecast /></div"];
-    return ["<div><section></section></div>"];
+    // return "<div>asdsad</div>";
+    // return "<div><section>asdasd</section></div>";
+    // return [
+    //   "<div><WeatherForecast /></div",
+    //   "<div><WeatherForecast /></div",
+    //   "asdasd"
+    // ];
+    return "<Temperature />";
+    // return ["<div><section></section></div>"];
+    // return ["<div></div>", "<i></i>"];
   }
 }

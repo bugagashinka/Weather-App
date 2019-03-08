@@ -10,9 +10,19 @@ export const classes = {
   //   WeatherForecast
 };
 
-export class ProxyClass {
-  constructor(name, ...params) {
+class ProxyClass {
+  // constructor(name, ...params) {
+  //   console.log("$$$$$$$$$$$$$$ ", classes);
+  //   return new classes[name](...params);
+  // }
+
+  createInstance(name, ...params) {
     console.log("$$$$$$$$$$$$$$ ", classes);
     return new classes[name](...params);
   }
+
+  isClass(name) {
+    return classes[name];
+  }
 }
+export default new ProxyClass();
