@@ -1,7 +1,7 @@
-  // import {App} from './components/App/';
-  // import {Temperature} from '../';
+  import {App} from './components/App/';
+  import {Temperature} from '../';
 
-  // new App(document.getElementById('app'));
+  new App(document.getElementById('app'));
 
   const container = document.getElementsByClassName('container')[0];
   const target = document.getElementsByClassName('target')[0];
