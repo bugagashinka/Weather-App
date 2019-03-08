@@ -1,5 +1,9 @@
 import { App } from "./components/App/";
 import { Temperature } from "../";
+import colorado from "../assets/img/colorado,usa.jpg";
+import kyiv from "../assets/img/kyiv,ua.jpg";
+import florida from "../assets/img/florida,usa.jpg";
+import nyc from "../assets/img/nyc,usa.jpg";
 
 new App(document.getElementById("app"));
 
@@ -17,7 +21,8 @@ body.addEventListener("mousemove", e => {
 const STORAGE_IMG_KEY = "lastImg";
 const storage = window.localStorage;
 
-const imgArr = ["kyiv,ua", "florida,usa", "colorado,usa", "nyc,usa"];
+// const imgArr = ["kyiv,ua", "florida,usa", "colorado,usa", "nyc,usa"];
+const imgArr = [colorado, nyc, kyiv, florida];
 
 const shuffle = arr => {
   return arr.sort(function() {
@@ -28,6 +33,7 @@ const shuffle = arr => {
 const randImgArr = shuffle(imgArr);
 const lastImg = storage.getItem(STORAGE_IMG_KEY);
 const randImg = lastImg === randImgArr[0] ? randImgArr[1] : randImgArr[0];
-bgImage.style.backgroundImage = `url('./assets/img/${randImg}.jpg')`;
-target.style.backgroundImage = `url('./assets/img/${randImg}.jpg')`;
+bgImage.style.backgroundImage = `url('${randImg}')`;
+target.style.backgroundImage = `url('${randImg}')`;
+// target.style.backgroundImage = `url('./assets/img/${randImg}.jpg')`;
 storage.setItem(STORAGE_IMG_KEY, randImg);

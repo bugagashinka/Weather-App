@@ -43,7 +43,6 @@ html {
 .bg-image,
 .target {
   height: 100%;
-  /* background-image: url('../img/colorado.jpg'); */
   background-repeat: no-repeat;
   background-position: top center;
   -webkit-background-size: cover;
