@@ -95,14 +95,9 @@ export default class Component {
     return "OMG! They wanna see me!!!!!! Aaaaaa";
   }
 
-  /**
-   *
-   * @param {string|HTMLElement|Object} element
-   * @private
-   */
   _vDomPrototypeElementToHtmlElement(
     element,
-    parent = document.createElement("div")
+    parent = document.createDocumentFragment()
   ) {
     if (element.tag) {
       if (ProxyClass.isClass(element.tag) && parent) {
