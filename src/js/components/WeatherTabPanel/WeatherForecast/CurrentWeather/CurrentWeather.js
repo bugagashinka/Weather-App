@@ -1,4 +1,4 @@
-import Component from "../../framework/Component";
+import Component from "../../../framework/Component";
 import { classMap } from "../../utils/ProxyClass";
 
 export default class CurrentWeather extends Component {

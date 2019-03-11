@@ -1,7 +1,7 @@
-import Component from "../../framework/Component";
-import { WeatherForecastItem } from "../WeatherForecastItem";
-import WeatherDataService from "../../services/WeatherDataService";
-import { classMap } from "../../utils/ProxyClass";
+import Component from "../../../framework/Component";
+import { WeatherForecastItem } from "./WeatherForecastItem";
+import WeatherDataService from "../../../services/WeatherDataService";
+import { classMap } from "../../../utils/ProxyClass";
 
 export default class WeatherForecast extends Component {
   constructor(host, props) {

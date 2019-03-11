@@ -1,9 +1,8 @@
 import Component from "../../framework/Component";
-import { FavouriteLocations } from "../FavouriteLocations";
-import { SearchHistory } from "../SearchHistory";
-import { CurrentWeather } from "../CurrentWeather";
-import { WeatherForecast } from "../WeatherForecast";
-import { TabsPanel } from "../TabsPanel";
+import { TabsPanel } from "./TabsPanel";
+import { WeatherForecast } from "./WeatherForecast";
+import { FavouriteLocations } from "./FavouriteLocations";
+import { SearchHistory } from "./SearchHistory";
 import { classMap } from "../../utils/ProxyClass";
 
 export default class WeatherTabPanel extends Component {
@@ -21,10 +20,4 @@ export default class WeatherTabPanel extends Component {
   }
 }
 
-classMap(
-  FavouriteLocations,
-  SearchHistory,
-  CurrentWeather,
-  WeatherForecast,
-  TabsPanel
-);
+classMap(FavouriteLocations, SearchHistory, WeatherForecast, TabsPanel);

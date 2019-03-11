@@ -1,6 +1,6 @@
-import Component from "../../framework/Component";
-import { Tab } from "../Tab";
-import { classMap } from "../../utils/ProxyClass";
+import Component from "../../../framework/Component";
+import { Tab } from "./Tab";
+import { classMap } from "../../../utils/ProxyClass";
 
 export default class TabsPanel extends Component {
   constructor(host, props) {
