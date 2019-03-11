@@ -1,36 +1,24 @@
 import ProxyClass from "../utils/ProxyClass";
 
 const PARSE_XML = "text/xml";
+const TEXT_NODE = "#text";
 
-const getElementAttr = element => {
-  const attrs = [];
-  console.log(element);
-  console.log(element.attributes);
-  for (let key = 0; key < element.attributes.length; key++) {
-    attrs.push({
-      name: element.attributes[key].nodeName,
-      value: element.attributes[key].value
-    });
-    console.log(
-      element.attributes[key].nodeName,
-      element.attributes[key].value
-    );
-  }
-  console.log(attrs);
-  return attrs;
+const getElementAttr = htmlElement => {
+  return Array.from(htmlElement.attributes).map((attr, index) => {
+    return {
+      name: htmlElement.attributes[index].nodeName,
+      value: htmlElement.attributes[index].value
+    };
+  });
 };
 
-//Convert markup to object literals
+//Convert dom nodes to object literals (proto)
 const htmlElementToVirtualDomPrototype = htmlElement => {
-  let elementProto;
-  if (htmlElement.nodeName === "#text") {
-    if (htmlElement.data.trim() == "") return null;
-    elementProto = {
-      tag: "span",
-      content: htmlElement.data
-    };
+  if (htmlElement.nodeName === TEXT_NODE) {
+    if (!htmlElement.data.trim().length) return null;
+    return { tag: "span", content: htmlElement.data };
   } else {
-    elementProto = {
+    return {
       tag: `${htmlElement.nodeName}`,
       attributes: getElementAttr(htmlElement),
       children: htmlElement.childNodes.length
@@ -40,15 +28,12 @@ const htmlElementToVirtualDomPrototype = htmlElement => {
         : []
     };
   }
-  return elementProto;
 };
 
 const parseHTMLString = content => {
-  // Parse html element in string
+  // Parse html element from string
   const parser = new DOMParser();
-  console.log("Content ", content);
   let element = parser.parseFromString(content, PARSE_XML).firstChild;
-  console.log(element);
   return element;
 };
 
@@ -67,7 +52,6 @@ export default class Component {
     this._render();
   }
   _render() {
-    console.log("====", ProxyClass);
     // this.host.innerHTML = "";
     let content = this.render();
 
@@ -75,14 +59,12 @@ export default class Component {
       content = [content];
     }
 
-    const prototypeElements = content.map(item => {
-      if (typeof item === "string") {
-        let domNodes = parseHTMLString(item);
-        console.log("!!!", domNodes);
+    const prototypeElements = content.map(contentItem => {
+      if (typeof contentItem === "string") {
+        let domNodes = parseHTMLString(contentItem);
         return htmlElementToVirtualDomPrototype(domNodes);
       }
     });
-    console.log(prototypeElements);
 
     prototypeElements
       .map(item => this._vDomPrototypeElementToHtmlElement(item)) // [string|HTMLElement] => [HTMLElement]
