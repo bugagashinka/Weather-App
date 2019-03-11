@@ -1,10 +1,10 @@
 import Component from "../../framework/Component";
-import "../FavouriteLocations";
-import "../SearchHistory";
-import "../CurrentWeather";
-import "../WeatherForecast";
-import "../TabsPanel";
-import { classes } from "../../utils/ProxyClass";
+import { FavouriteLocations } from "../FavouriteLocations";
+import { SearchHistory } from "../SearchHistory";
+import { CurrentWeather } from "../CurrentWeather";
+import { WeatherForecast } from "../WeatherForecast";
+import { TabsPanel } from "../TabsPanel";
+import { classMap } from "../../utils/ProxyClass";
 
 export default class WeatherTabPanel extends Component {
   constructor(host, props) {
@@ -21,4 +21,10 @@ export default class WeatherTabPanel extends Component {
   }
 }
 
-classes["WeatherTabPanel"] = WeatherTabPanel;
+classMap(
+  FavouriteLocations,
+  SearchHistory,
+  CurrentWeather,
+  WeatherForecast,
+  TabsPanel
+);

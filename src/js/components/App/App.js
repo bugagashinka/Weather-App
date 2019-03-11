@@ -1,7 +1,8 @@
 import Component from "../../framework/Component";
-import "../Temperature";
-import "../SearchBar";
-import "../WeatherTabPanel";
+import { Temperature } from "../Temperature";
+import { SearchBar } from "../SearchBar";
+import { WeatherTabPanel } from "../WeatherTabPanel";
+import { classMap } from "../../utils/ProxyClass";
 
 export default class App extends Component {
   constructor(host) {
@@ -23,3 +24,4 @@ export default class App extends Component {
     ];
   }
 }
+classMap(Temperature, SearchBar, WeatherTabPanel);

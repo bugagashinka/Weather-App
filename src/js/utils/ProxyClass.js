@@ -1,28 +1,18 @@
-// import Temperature from "../components/Temperature";
-// import SearchBar from "../components/SearchBar";
-// import CurrentWeather from "../components/CurrentWeather";
-// import WeatherForecast from "../components/WeatherForecast";
+const _classMap = {};
 
-export const classes = {
-  //   Temperature,
-  //   SearchBar,
-  //   CurrentWeather,
-  //   WeatherForecast
+export const classMap = (...entityList) => {
+  entityList.forEach(entity => {
+    _classMap[entity.name] = entity;
+  });
 };
 
 class ProxyClass {
-  // constructor(name, ...params) {
-  //   console.log("$$$$$$$$$$$$$$ ", classes);
-  //   return new classes[name](...params);
-  // }
-
   createInstance(name, ...params) {
-    console.log("$$$$$$$$$$$$$$ ", classes);
-    return new classes[name](...params);
+    return new _classMap[name](...params);
   }
 
   isClass(name) {
-    return classes[name];
+    return _classMap[name];
   }
 }
 export default new ProxyClass();

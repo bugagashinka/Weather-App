@@ -1,5 +1,4 @@
 import Component from "../../framework/Component";
-import { classes } from "../../utils/ProxyClass";
 
 export default class Tab extends Component {
   constructor(host, props) {
@@ -21,6 +20,3 @@ export default class Tab extends Component {
     ];
   }
 }
-//
-
-classes["Tab"] = Tab;

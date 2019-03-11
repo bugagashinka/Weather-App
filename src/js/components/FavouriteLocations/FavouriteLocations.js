@@ -1,5 +1,4 @@
 import Component from "../../framework/Component";
-import { classes } from "../../utils/ProxyClass";
 
 export default class FavouriteLocations extends Component {
   constructor(host, props) {
@@ -10,5 +9,3 @@ export default class FavouriteLocations extends Component {
     return `<section class="tab-content weather-favorite">Favorite targets</section>`;
   }
 }
-
-classes["FavouriteLocations"] = FavouriteLocations;

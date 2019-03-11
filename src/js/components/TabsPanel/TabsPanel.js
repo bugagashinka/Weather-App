@@ -1,6 +1,6 @@
 import Component from "../../framework/Component";
-import "../Tab";
-import { classes } from "../../utils/ProxyClass";
+import { Tab } from "../Tab";
+import { classMap } from "../../utils/ProxyClass";
 
 export default class TabsPanel extends Component {
   constructor(host, props) {
@@ -16,4 +16,4 @@ export default class TabsPanel extends Component {
   }
 }
 
-classes["TabsPanel"] = TabsPanel;
+classMap(Tab);

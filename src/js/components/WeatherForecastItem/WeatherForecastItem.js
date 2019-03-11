@@ -1,5 +1,4 @@
 import Component from "../../framework/Component";
-import { classes } from "../../utils/ProxyClass";
 
 export default class WeatherForecastItem extends Component {
   constructor(host, props) {
@@ -28,5 +27,3 @@ export default class WeatherForecastItem extends Component {
   </div>`;
   }
 }
-
-classes["WeatherForecastItem"] = WeatherForecastItem;

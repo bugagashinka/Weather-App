@@ -1,5 +1,5 @@
 import Component from "../../framework/Component";
-import WeatherForecastItem from "../WeatherForecastItem";
+import { classMap } from "../../utils/ProxyClass";
 
 export default class CurrentWeather extends Component {
   constructor(host, props) {
