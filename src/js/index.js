@@ -8,7 +8,7 @@ import nyc from "../assets/img/nyc,usa.jpg";
 new App(document.getElementById("app"));
 
 const container = document.getElementsByClassName("container")[0];
-const target = document.getElementsByClassName("target")[0];
+const target = document.getElementsByClassName("weather-target")[0];
 const body = document.getElementsByTagName("body")[0];
 const bgImage = document.getElementsByClassName("bg-image")[0];
 

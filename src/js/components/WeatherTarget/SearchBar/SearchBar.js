@@ -1,4 +1,4 @@
-import Component from "../../framework/Component";
+import Component from "../../../framework/Component";
 
 export default class SearchBar extends Component {
   constructor(host, props) {

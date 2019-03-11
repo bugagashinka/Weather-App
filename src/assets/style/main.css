@@ -41,7 +41,7 @@ html {
 
 /*  */
 .bg-image,
-.target {
+.weather-target {
   height: 100%;
   background-repeat: no-repeat;
   background-position: top center;
@@ -59,7 +59,7 @@ html {
   -webkit-filter: blur(8px);
   filter: blur(8px);
 }
-.target {
+.weather-target {
   height: 70%;
   border-radius: 5px 5px 0 0;
   -webkit-background-size: 110%;

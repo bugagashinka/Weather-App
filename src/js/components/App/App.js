@@ -1,5 +1,5 @@
 import Component from "../../framework/Component";
-import { SearchBar } from "../SearchBar";
+import { WeatherTarget } from "../WeatherTarget";
 import { WeatherTabPanel } from "../WeatherTabPanel";
 import { classMap } from "../../utils/ProxyClass";
 
@@ -11,16 +11,9 @@ export default class App extends Component {
   render() {
     return [
       '<div class="bg-image"></div>',
-      `<section class="target">
-        <SearchBar/>
-        <div class="location">
-          <span class="loc-city"></span>
-          <span class="loc-coordinate"></span>
-          <span class="loc-date"></span>
-        </div>
-      </section>`,
+      "<WeatherTarget/>",
       "<WeatherTabPanel/>"
     ];
   }
 }
-classMap(SearchBar, WeatherTabPanel);
+classMap(WeatherTarget, WeatherTabPanel);
