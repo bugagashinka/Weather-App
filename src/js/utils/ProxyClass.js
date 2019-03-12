@@ -7,12 +7,14 @@ export const classMap = (...entityList) => {
 };
 
 class ProxyClass {
-  createInstance(name, ...params) {
-    return new _classMap[name](...params);
+  createInstance(className, ...params) {
+    return typeof className === "function"
+      ? new className(...params)
+      : new _classMap[className](...params);
   }
 
-  isClass(name) {
-    return _classMap[name];
+  isClass(className) {
+    return typeof className === "function" ? true : _classMap[className];
   }
 }
 export default new ProxyClass();

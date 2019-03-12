@@ -19,7 +19,7 @@ const getElementAttr = htmlElement => {
 const htmlElementToVirtualDomPrototype = htmlElement => {
   if (htmlElement.nodeName === TEXT_NODE) {
     if (!htmlElement.data.trim().length) return null;
-    return { tag: TAG_SPAN, content: htmlElement.data };
+    return { tag: TAG_SPAN, content: htmlElement.data, children: [] };
   } else {
     return {
       tag: `${htmlElement.nodeName}`,
@@ -39,7 +39,7 @@ const parseHTMLString = content => {
 };
 
 const attrToPropsFormat = attrs => {
-  return attrs.length
+  return attrs && attrs.length
     ? attrs.reduce((props, attr) => {
         props[attr.name] = attr.value;
         return props;
@@ -64,9 +64,9 @@ export default class Component {
 
     content
       .map(contentItem => {
-        if (isString(contentItem)) {
-          return htmlElementToVirtualDomPrototype(parseHTMLString(contentItem));
-        }
+        return isString(contentItem)
+          ? htmlElementToVirtualDomPrototype(parseHTMLString(contentItem))
+          : contentItem;
       })
       .map(prototypeItem =>
         this._vDomPrototypeElementToHtmlElement(prototypeItem)
@@ -82,55 +82,52 @@ export default class Component {
   }
 
   _vDomPrototypeElementToHtmlElement(
-    element,
+    protoElement,
     parent = document.createDocumentFragment()
   ) {
-    // if (element.tag) {
-    if (ProxyClass.isClass(element.tag) && parent) {
+    if (ProxyClass.isClass(protoElement.tag) && parent) {
       //It's component
-      const props = attrToPropsFormat(element.attributes);
-      ProxyClass.createInstance(element.tag, parent, props);
+      const props = attrToPropsFormat(protoElement.attributes);
+      ProxyClass.createInstance(protoElement.tag, parent, props);
       return parent;
     }
     //It's not component
-    const container = document.createElement(element.tag);
-    if (element.content) {
-      container.innerHTML = element.content;
+    const htmlElement = document.createElement(protoElement.tag);
+    if (protoElement.content) {
+      htmlElement.innerHTML = protoElement.content;
     }
 
     // ensure following element properties are Array
     ["classList", "attributes", "children"].forEach(item => {
-      if (element[item] && !Array.isArray(element[item])) {
-        element[item] = [element[item]];
+      if (protoElement[item] && !Array.isArray(protoElement[item])) {
+        protoElement[item] = [protoElement[item]];
       }
     });
 
-    if (element.classList) {
-      container.classList.add(...element.classList);
+    if (protoElement.classList) {
+      htmlElement.classList.add(...protoElement.classList);
     }
 
-    if (element.attributes) {
-      element.attributes.forEach(attributeSpec => {
-        container.setAttribute(attributeSpec.name, attributeSpec.value);
+    if (protoElement.attributes) {
+      protoElement.attributes.forEach(attributeSpec => {
+        htmlElement.setAttribute(attributeSpec.name, attributeSpec.value);
       });
     }
 
     // process children
-    if (element.children) {
-      element.children.forEach(el => {
-        if (!el) return;
-        const htmlElement = this._vDomPrototypeElementToHtmlElement(
-          el,
-          container
+    if (protoElement.children) {
+      protoElement.children.forEach(childElement => {
+        if (!childElement) return;
+        const childHtmlElement = this._vDomPrototypeElementToHtmlElement(
+          childElement,
+          htmlElement
         );
-        if (htmlElement !== container) {
-          container.appendChild(htmlElement);
+        if (childHtmlElement !== htmlElement) {
+          htmlElement.appendChild(childHtmlElement);
         }
       });
     }
 
-    return container;
+    return htmlElement;
   }
-  // return element;
-  // }
 }

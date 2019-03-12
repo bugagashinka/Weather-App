@@ -11,7 +11,9 @@ export default class App extends Component {
   render() {
     return [
       '<div class="bg-image"></div>',
-      "<WeatherTarget/>",
+      {
+        tag: WeatherTarget
+      },
       "<WeatherTabPanel/>"
     ];
   }
