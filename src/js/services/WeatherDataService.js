@@ -1,4 +1,10 @@
+const subsList = new Set();
+
 class WeatherServices {
+  subscribeForCurrentWeather(subscriber) {
+    subsList.add(subscriber);
+  }
+
   getCurrentWeather() {
     return [
       {
@@ -53,6 +59,11 @@ class WeatherServices {
     ];
   }
   getWeatherForecast() {
+    setTimeout(() => {
+      subsList.forEach(listener => listener(this.getData()));
+    }, 1000);
+  }
+  getData() {
     return [
       {
         dt: 1551960000,
