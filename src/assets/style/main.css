@@ -106,7 +106,7 @@ html {
 }
 .tab-content {
   display: none;
-  background-color: rgba(150, 150, 150, 0.5);
+  background-color: rgba(183, 183, 183, 0.5);
   border-radius: 0 0 7px 7px;
 }
 #forecast-tab:checked ~ .forecast-tab,
@@ -132,6 +132,7 @@ html {
   border-radius: 15px;
   background-color: rgba(157, 143, 132, 0.5);
   color: #fff;
+  text-transform: uppercase;
 }
 .item-day sup {
   display: none;
@@ -155,12 +156,17 @@ html {
   position: relative;
   flex: 3;
 }
+.item-icon {
+  font-size: 1.5em;
+}
+.item-unit {
+  font-size: 0.7em;
+}
 
 /* CurrentWeather component */
 .open .item-day {
   margin: 0;
   align-self: initial;
-  text-transform: uppercase;
 }
 .open .item-day sup {
   display: initial;

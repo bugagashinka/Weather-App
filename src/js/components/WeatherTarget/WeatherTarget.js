@@ -8,6 +8,7 @@ export default class WeatherTarget extends Component {
   }
 
   render() {
+    console.log(`render from ${this.constructor.name}`);
     return [
       `<section class="weather-target">
           <SearchBar/>

@@ -2,43 +2,91 @@ import Component from "../../../framework/Component";
 import { WeatherForecastItem } from "./WeatherForecastItem";
 import WeatherDataService from "../../../services/WeatherDataService";
 import { classMap } from "../../../utils/ProxyClass";
+import {
+  getDayNameById,
+  timeToOpenWeatherTime,
+  getWeatherByDay
+} from "../../../utils/utils.js";
+
+let weekForecast = [];
 
 export default class WeatherForecast extends Component {
   constructor(host, props) {
     super(host, props);
+    this.state = {};
+    this.onServerResponse = this.onServerResponse.bind(this);
+    WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
+    WeatherDataService.getWeatherForecast();
+  }
+
+  onServerResponse(weatherData) {
+    let fiveDayForecast = getWeatherByDay(weatherData);
+    weekForecast = this.buildForecastItems(fiveDayForecast);
+    this.setState({});
+  }
+
+  beforeRender() {
+    console.log(`${this.constructor.name} | Before render `);
+    // weekForecast = this.buildForecastItems();
+    // this.setState({});
+  }
+
+  buildForecastItems(fiveDayForecast) {
+    const currentDate = new Date("2019-03-12 00:00:00"); //new Date();
+    const currentTime = timeToOpenWeatherTime(currentDate);
+
+    for (let [day, weather] of fiveDayForecast) {
+      const dayWeather = weather.has(currentTime)
+        ? weather.get(currentTime)
+        : weather.values().next().value;
+
+      weekForecast.push(
+        `<WeatherForecastItem
+            classList='${currentDate.getDay() === day ? "open" : ""}'
+            temperature='${parseInt(dayWeather.main.temp)}'
+            humidity='${dayWeather.main.humidity}'
+            wind='${dayWeather.wind.speed}'
+            weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
+            pressure='${dayWeather.main.pressure}'
+            unit='metrical;'
+        />`
+      );
+    }
+    return weekForecast.slice(0).join("");
   }
 
   render() {
-    let weatherForecast = WeatherDataService.getWeatherForecast();
-    // weatherForecast
-    //   .map(itemForecast => {
-    //     return `<WeatherForecastItem
-    //   temperature='${itemForecast.main.temp}'
-    //   humidity='${itemForecast.main.humidity}'
-    //   wind='${itemForecast.wind.speed}'
-    //   weekDay='Monday'
-    //   pressure='${itemForecast.main.pressure}'
-    //   unit='metrical;'
-    //   />`;
-    //   })
-    //   .slice(0)
-    //   .forEach(weatherItem => {
-    //     res += weatherItem;
-    //   });
-    weatherForecast = [1, 2, 3, 4, 5]
-      .map(() => {
-        return `<WeatherForecastItem
-        temperature='9.37'
-        humidity='72'
-        wind='3'
-        weekDay='Monday'
-        pressure='1012.42'
-        unit='metrical;'
-      />`;
-      })
-      .join("");
+    console.log(`render from ${this.constructor.name}`);
+    //pre render
+    // let fiveDayForecast = getWeatherByDay(
+    //   WeatherDataService.getWeatherForecast()
+    // );
+    // const currentDate = new Date("2019-03-12 00:00:00"); //new Date();
+    // const currentTime = timeToOpenWeatherTime(currentDate);
+
+    // let weekForecast = [];
+    // for (let [day, weather] of fiveDayForecast) {
+    //   const dayWeather = weather.has(currentTime)
+    //     ? weather.get(currentTime)
+    //     : weather.values().next().value;
+    //   console.log(currentDate.getDay() === day);
+    //   weekForecast.push(
+    //     `<WeatherForecastItem
+    //         classList='${currentDate.getDay() === day ? "open" : ""}'
+    //         temperature='${parseInt(dayWeather.main.temp)}'
+    //         humidity='${dayWeather.main.humidity}'
+    //         wind='${dayWeather.wind.speed}'
+    //         weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
+    //         pressure='${dayWeather.main.pressure}'
+    //         unit='metrical;'
+    //     />`
+    //   );
+    // }
+    // weekForecast = weekForecast.slice(0).join("");
+    //
+
     return `<section class="tab-content weather-forecast">
-      ${weatherForecast}
+      ${weekForecast}
     </section>`;
   }
 }
