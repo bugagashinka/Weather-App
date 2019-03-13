@@ -51,7 +51,9 @@ export default class Component {
   constructor(host, props = {}) {
     this.host = host;
     this.props = props;
+    this.beforeRender();
     this._render();
+    this.afterRender();
   }
 
   _render() {
@@ -74,6 +76,20 @@ export default class Component {
       .forEach(htmlElement => {
         this.host.appendChild(htmlElement);
       });
+  }
+
+  beforeRender() {}
+
+  afterRender() {}
+
+  setState(newState) {
+    console.log("Component | setState |", this.state);
+    if (!this.state) {
+      throw `${this.constructor.name} component doesn't have state yet`;
+    }
+    this.state = Object.assign({}, this.state, newState);
+    console.log("Component | setState | before call rerender");
+    this._render();
   }
 
   /* @returns {string|[string|HTMLElement|Component]} */
