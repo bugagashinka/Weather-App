@@ -10,7 +10,12 @@ export default class WeatherForecastItem extends Component {
 
   beforeRender() {
     console.log(`${this.constructor.name} | Before render `);
-    // this.setState({});
+  }
+
+  updateForecast(data) {
+    console.log(data);
+    this.props.temperature = 1;
+    this.setState(data);
   }
 
   render() {

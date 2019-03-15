@@ -6,6 +6,9 @@ const TEXT_NODE = "#text";
 const TAG_SPAN = "span";
 const DOM_PARSER = new DOMParser();
 
+let isReRender = false;
+let vDomTree = new Map();
+
 const getElementAttr = htmlElement => {
   return Array.from(htmlElement.attributes).map((attr, index) => {
     return {
@@ -64,17 +67,28 @@ export default class Component {
       content = [content];
     }
 
+    content = content.map(contentItem => {
+      return isString(contentItem)
+        ? htmlElementToVirtualDomPrototype(parseHTMLString(contentItem))
+        : contentItem;
+    });
+
+    if (!vDomTree.has(this)) {
+      vDomTree.set(this, { compProtoContent: content });
+    }
+
     content
-      .map(contentItem => {
-        return isString(contentItem)
-          ? htmlElementToVirtualDomPrototype(parseHTMLString(contentItem))
-          : contentItem;
-      })
       .map(prototypeItem =>
         this._vDomPrototypeElementToHtmlElement(prototypeItem)
       )
       .forEach(htmlElement => {
-        this.host.appendChild(htmlElement);
+        if (isReRender) {
+          const oldHtmlElementNode = vDomTree.get(this).componentNode;
+          this.host.replaceChild(htmlElement, oldHtmlElementNode);
+        } else {
+          const htmlElementNode = this.host.appendChild(htmlElement);
+          vDomTree.get(this).componentNode = htmlElementNode;
+        }
       });
   }
 
@@ -82,14 +96,26 @@ export default class Component {
 
   afterRender() {}
 
+  // This wheel use only for impose explicit property creation in component
+  static createRef() {
+    //return Declared (sub)Component with ref-property, as a value for parent component property created with 'createRef'
+    return function _createRef(subComponent) {
+      return subComponent;
+    };
+  }
+
   setState(newState) {
     console.log("Component | setState |", this.state);
     if (!this.state) {
-      throw `${this.constructor.name} component doesn't have state yet`;
+      throw new Error(
+        `${this.constructor.name} component doesn't have state yet`
+      );
     }
     this.state = Object.assign({}, this.state, newState);
     console.log("Component | setState | before call rerender");
+    isReRender = !isReRender;
     this._render();
+    isReRender = !isReRender;
   }
 
   /* @returns {string|[string|HTMLElement|Component]} */
@@ -104,7 +130,16 @@ export default class Component {
     if (ProxyClass.isClass(protoElement.tag) && parent) {
       //It's component
       const props = attrToPropsFormat(protoElement.attributes);
-      ProxyClass.createInstance(protoElement.tag, parent, props);
+      const comp = ProxyClass.createInstance(protoElement.tag, parent, props);
+      if (props.ref) {
+        //where 'this' - parent component
+        if (
+          typeof this[props.ref] != "function" &&
+          this[props.ref].name != "_createRef"
+        )
+          throw new Error("Use Component.createRef for create property");
+        this[props.ref] = this[props.ref](comp);
+      }
       return parent;
     }
     //It's not component

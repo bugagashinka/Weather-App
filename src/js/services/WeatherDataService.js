@@ -59,9 +59,10 @@ class WeatherServices {
     ];
   }
   getWeatherForecast() {
-    setTimeout(() => {
-      subsList.forEach(listener => listener(this.getData()));
-    }, 1000);
+    // setTimeout(() => {
+    //   subsList.forEach(listener => listener(this.getData()));
+    // }, 1000);
+    return this.getData();
   }
   getData() {
     return [
