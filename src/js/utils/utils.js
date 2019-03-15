@@ -21,13 +21,16 @@ const isString = value => {
 const getWeatherByDay = weatherArray => {
   if (!_weatherByDay) _weatherByDay = new Map();
 
-  weatherArray.forEach(dayWeather => {
+  weatherArray.every(dayWeather => {
     const date = new Date(dayWeather.dt_txt);
+
+    if (_weatherByDay.size > 4) return false;
 
     if (!_weatherByDay.get(date.getDay())) {
       _weatherByDay.set(date.getDay(), new Map());
     }
     _weatherByDay.get(date.getDay()).set(date.getHours(), dayWeather);
+    return true;
   });
   return _weatherByDay;
 };
