@@ -120,6 +120,19 @@ export default class Component {
     return "object" + JSON.stringify(plainObject).replace(/"/g, "&quot;");
   }
 
+  _checkRefProp(props, childComp) {
+    //'this' - it's parent component
+    if (!props.ref) return;
+
+    if (
+      typeof this[props.ref] != "function" &&
+      this[props.ref].name != "_createRef"
+    ) {
+      throw new Error("Use Component.createRef for create property");
+    }
+    this[props.ref] = this[props.ref](childComp);
+  }
+
   setState(newState) {
     console.log("Component | setState |", this.state);
     if (!this.state) {
@@ -147,15 +160,7 @@ export default class Component {
       //It's component
       const props = attrToPropsFormat(protoElement.attributes);
       const comp = ProxyClass.createInstance(protoElement.tag, parent, props);
-      if (props.ref) {
-        //where 'this' - parent component
-        if (
-          typeof this[props.ref] != "function" &&
-          this[props.ref].name != "_createRef"
-        )
-          throw new Error("Use Component.createRef for create property");
-        this[props.ref] = this[props.ref](comp);
-      }
+      this._checkRefProp(props, comp);
       return parent;
     }
     //It's not component
