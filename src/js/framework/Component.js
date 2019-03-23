@@ -87,7 +87,7 @@ export default class Component {
     });
 
     if (!vDomTree.has(this)) {
-      vDomTree.set(this, { compProtoContent: content });
+      vDomTree.set(this, { compProtoContent: content, children: [] });
     }
 
     content
@@ -95,9 +95,10 @@ export default class Component {
         this._vDomPrototypeElementToHtmlElement(prototypeItem)
       )
       .forEach(htmlElement => {
-        if (isReRender) {
+        if (isReRender && vDomTree.get(this).componentNode) {
           const oldHtmlElementNode = vDomTree.get(this).componentNode;
-          this.host.replaceChild(htmlElement, oldHtmlElementNode);
+          oldHtmlElementNode.replaceWith(htmlElement);
+          vDomTree.get(this).componentNode = htmlElement;
         } else {
           const htmlElementNode = this.host.appendChild(htmlElement);
           vDomTree.get(this).componentNode = htmlElementNode;
@@ -142,6 +143,9 @@ export default class Component {
     }
     this.state = Object.assign({}, this.state, newState);
     console.log("Component | setState | before call rerender");
+    vDomTree.get(this).children.forEach(childComp => {
+      vDomTree.delete(childComp);
+    });
     isReRender = !isReRender;
     this._render();
     isReRender = !isReRender;
@@ -156,10 +160,11 @@ export default class Component {
     protoElement,
     parent = document.createDocumentFragment()
   ) {
-    if (ProxyClass.isClass(protoElement.tag) && parent) {
+    if (ProxyClass.isClass(protoElement.tag)) {
       //It's component
       const props = attrToPropsFormat(protoElement.attributes);
       const comp = ProxyClass.createInstance(protoElement.tag, parent, props);
+      vDomTree.get(this).children.push(comp);
       this._checkRefProp(props, comp);
       return parent;
     }
