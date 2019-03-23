@@ -51,7 +51,9 @@ const parseHTMLString = content => {
 const attrToPropsFormat = attrs => {
   return attrs && attrs.length
     ? attrs.reduce((props, attr) => {
-        props[attr.name] = attr.value;
+        props[attr.name] = attr.value.startsWith("object")
+          ? JSON.parse(attr.value.replace("object", ""))
+          : attr.value;
         return props;
       }, {})
     : {};
@@ -112,6 +114,11 @@ export default class Component {
     return function _createRef(subComponent) {
       return subComponent;
     };
+  }
+
+  static createObject(plainObject) {
+    return JSON.stringify(plainObject).replace(/"/g, "&quot;");
+    return "object" + JSON.stringify(plainObject).replace(/"/g, "&quot;");
   }
 
   setState(newState) {
