@@ -178,6 +178,9 @@ export default class Component {
     if (protoElement.eventHandlers) {
       Object.keys(protoElement.eventHandlers).forEach(eventType => {
         const handlerName = protoElement.eventHandlers[eventType];
+        const handlerName = new Function(
+          `return ${protoElement.eventHandlers[eventType]}`
+        )().name;
         htmlElement.addEventListener(eventType, this[handlerName].bind(this));
       });
     }
