@@ -24,9 +24,16 @@ const htmlElementToVirtualDomPrototype = htmlElement => {
     if (!htmlElement.data.trim().length) return null;
     return { tag: TAG_SPAN, content: htmlElement.data, children: [] };
   } else {
+    const elementAttrs = getElementAttr(htmlElement);
     return {
       tag: `${htmlElement.nodeName}`,
-      attributes: getElementAttr(htmlElement),
+      attributes: elementAttrs.filter(({ name }) => !name.startsWith("on")),
+      eventHandlers: elementAttrs.reduce((handlers, { name, value }) => {
+        if (name.startsWith("on")) {
+          handlers[name.toLowerCase().slice(2)] = value;
+        }
+        return handlers;
+      }, {}),
       children: htmlElement.childNodes.length
         ? Array.from(htmlElement.childNodes).map(
             htmlElementToVirtualDomPrototype
@@ -54,10 +61,15 @@ export default class Component {
   constructor(host, props = {}) {
     this.host = host;
     this.props = props;
+    this.init();
     this.beforeRender();
     this._render();
     this.afterRender();
   }
+
+  init() {}
+
+  beforeRender() {}
 
   _render() {
     // this.host.innerHTML = "";
@@ -91,8 +103,6 @@ export default class Component {
         }
       });
   }
-
-  beforeRender() {}
 
   afterRender() {}
 
@@ -162,6 +172,13 @@ export default class Component {
     if (protoElement.attributes) {
       protoElement.attributes.forEach(attributeSpec => {
         htmlElement.setAttribute(attributeSpec.name, attributeSpec.value);
+      });
+    }
+
+    if (protoElement.eventHandlers) {
+      Object.keys(protoElement.eventHandlers).forEach(eventType => {
+        const handlerName = protoElement.eventHandlers[eventType];
+        htmlElement.addEventListener(eventType, this[handlerName].bind(this));
       });
     }
 
