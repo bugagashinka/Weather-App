@@ -1,12 +1,15 @@
 import ProxyClass from "../utils/ProxyClass";
+import AppState from "../services/AppState";
 import { isString } from "../utils/utils";
 
 const PARSE_XML = "text/xml";
 const TEXT_NODE = "#text";
 const DOM_PARSER = new DOMParser();
+const COMPONENT_MOUNTED_EVENT = "COMPONENT_MOUNTED";
 
-let isReRender = false;
 let vDomTree = new Map();
+let isReRender = false;
+let rootComponent;
 
 export default class Component {
   constructor(host, props = {}) {
@@ -15,7 +18,7 @@ export default class Component {
     this.init();
     this.beforeRender();
     this._render();
-    this.afterRender();
+    this._afterRender();
   }
 
   init() {}
@@ -30,7 +33,11 @@ export default class Component {
     }
 
     if (!vDomTree.has(this)) {
+      if (!vDomTree.size) {
+        rootComponent = this.constructor.name;
+      }
       vDomTree.set(this, { children: [] });
+      AppState.watch(COMPONENT_MOUNTED_EVENT, this.afterRender.bind(this));
     }
 
     content
@@ -58,6 +65,13 @@ export default class Component {
   /* @returns {string|[string|HTMLElement|Component]} */
   render() {
     return "OMG! They wanna see me!!!!!! Aaaaaa";
+  }
+
+  //notify all components, when first/root component rendered and attached to the document
+  _afterRender() {
+    if (this.constructor.name === rootComponent) {
+      AppState.update(COMPONENT_MOUNTED_EVENT);
+    }
   }
 
   afterRender() {}
