@@ -3,7 +3,6 @@ import { isString } from "../utils/utils";
 
 const PARSE_XML = "text/xml";
 const TEXT_NODE = "#text";
-const TAG_SPAN = "span";
 const DOM_PARSER = new DOMParser();
 
 let isReRender = false;
@@ -22,7 +21,7 @@ const getElementAttr = htmlElement => {
 const htmlElementToVirtualDomPrototype = htmlElement => {
   if (htmlElement.nodeName === TEXT_NODE) {
     if (!htmlElement.data.trim().length) return null;
-    return { tag: TAG_SPAN, content: htmlElement.data, children: [] };
+    return { tag: TEXT_NODE, content: htmlElement.data.trim(), children: [] };
   } else {
     const elementAttrs = getElementAttr(htmlElement);
     return {
@@ -45,7 +44,7 @@ const htmlElementToVirtualDomPrototype = htmlElement => {
 
 // Parse html element from string into dom nodes
 const parseHTMLString = content => {
-  return DOM_PARSER.parseFromString(content, PARSE_XML).firstChild;
+  return DOM_PARSER.parseFromString(content.trim(), PARSE_XML).firstChild;
 };
 
 const attrToPropsFormat = attrs => {
@@ -160,7 +159,10 @@ export default class Component {
       return parent;
     }
     //It's not component
-    const htmlElement = document.createElement(protoElement.tag);
+    const htmlElement =
+      protoElement.tag == TEXT_NODE
+        ? document.createTextNode(protoElement.content)
+        : document.createElement(protoElement.tag);
     if (protoElement.content) {
       htmlElement.innerHTML = protoElement.content;
     }
