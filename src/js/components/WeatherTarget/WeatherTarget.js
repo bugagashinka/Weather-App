@@ -19,33 +19,6 @@ export default class WeatherTarget extends Component {
           </div>
       </section>`
     ];
-    return [
-      {
-        tag: "section",
-        classList: ["weather-target"],
-        children: [
-          { tag: SearchBar },
-          {
-            tag: "div",
-            classList: ["location"],
-            children: [
-              {
-                tag: "span",
-                classList: ["loc-city"]
-              },
-              {
-                tag: "span",
-                classList: ["loc-coordinate"]
-              },
-              {
-                tag: "span",
-                classList: ["loc-date"]
-              }
-            ]
-          }
-        ]
-      }
-    ];
   }
 }
 classMap(SearchBar);

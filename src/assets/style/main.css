@@ -19,6 +19,7 @@ html {
 /* Search component */
 .input-search {
   margin: 30px;
+  padding: 5px 0;
   border: none;
   outline: none;
   background-color: rgba(0, 0, 0, 0);
