@@ -24,76 +24,23 @@ export default class WeatherForecast extends Component {
 
   onServerResponse(weatherData) {
     let fiveDayForecast = getWeatherByDay(weatherData);
-    // weekForecast = this.buildForecastItems(fiveDayForecast);
-    // this.setState({});
+    weekForecast = this.buildForecastItemList(fiveDayForecast);
+    this.setState({});
   }
 
   beforeRender() {
     console.log(`${this.constructor.name} | Before render `);
-    // weekForecast = this.buildForecastItems();
+    // weekForecast = this.buildForecastItemList();
     // this.setState({});
   }
 
-  afterRender() {
-    console.log("afterRender | weatherForecastItem");
+  afterRender() {}
 
-    setTimeout(
-      this.weatherForecastItem0.updateForecast.bind(this.weatherForecastItem0),
-      2000
-    );
-  }
-
-  buildForecastItems(fiveDayForecast) {
+  buildForecastItemList(fiveDayForecast) {
     const currentDate = new Date("2019-03-11 00:00:00"); //new Date();
     const currentTime = timeToOpenWeatherTime(currentDate);
 
-    for (let [day, weather] of fiveDayForecast) {
-      const dayWeather = weather.has(currentTime)
-        ? weather.get(currentTime)
-        : weather.values().next().value;
-
-      weekForecast.push(
-        `<WeatherForecastItem ref='weatherForecastItem'
-            classList='${currentDate.getDay() === day ? "open" : ""}'
-            temperature='${parseInt(dayWeather.main.temp)}'
-            humidity='${dayWeather.main.humidity}'
-            wind='${dayWeather.wind.speed}'
-            weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
-            pressure='${dayWeather.main.pressure}'
-            unit='metrical;'
-        />`
-      );
-    }
-    return weekForecast.slice(0).join("");
-  }
-
-  itemStyleChangeHandler(selectedItemComp, selectedItemNode) {
-    if (selectedItemComp == this.preSelectedDayItem) return;
-
-    Array.from(this.preSelectedDayItem.host.children).forEach(item => {
-      if (item.classList.contains("open")) {
-        item.classList.toggle("open");
-      }
-    });
-
-    this.preSelectedDayItem = selectedItemComp;
-    selectedItemNode.classList.toggle("open");
-  }
-
-  afterRender() {
-    this.preSelectedDayItem = this[this.currentDayItemRef];
-  }
-
-  render() {
-    console.log(`render from ${this.constructor.name}`);
-    // pre render
-    let fiveDayForecast = getWeatherByDay(
-      WeatherDataService.getWeatherForecast()
-    );
-    const currentDate = new Date("2019-03-11 00:00:00"); //new Date();
-    const currentTime = timeToOpenWeatherTime(currentDate);
-
-    let weekForecast = [];
+    let _weekForecast = [];
     for (let [day, weather] of fiveDayForecast) {
       const dayWeather = weather.has(currentTime)
         ? weather.get(currentTime)
@@ -106,7 +53,7 @@ export default class WeatherForecast extends Component {
       const isCurrentDay = currentDate.getDay() === day;
       if (isCurrentDay) this.currentDayItemRef = itemRef;
 
-      weekForecast.push(
+      _weekForecast.push(
         `<WeatherForecastItem ref='${itemRef}'
             onChangeStyle='${this.itemStyleChangeHandler}'
             classList='${isCurrentDay ? "open" : ""}'
@@ -119,8 +66,25 @@ export default class WeatherForecast extends Component {
         />`
       );
     }
-    weekForecast = weekForecast.slice(0).join("");
+    return _weekForecast.slice(0).join("");
+  }
 
+  itemStyleChangeHandler(selectedItemComp, selectedItemNode) {
+    if (selectedItemComp == this.preSelectedDayItem) return;
+    Array.from(this.preSelectedDayItem.host.children).forEach(item => {
+      if (item.classList.contains("open")) {
+        item.classList.toggle("open");
+      }
+    });
+    this.preSelectedDayItem = selectedItemComp;
+    selectedItemNode.classList.toggle("open");
+  }
+
+  afterRender() {
+    this.preSelectedDayItem = this[this.currentDayItemRef];
+  }
+
+  render() {
     return `<section class="tab-content weather-forecast">
       ${weekForecast}
     </section>`;

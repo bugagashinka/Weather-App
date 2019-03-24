@@ -6,6 +6,6 @@ export default class FavouriteLocations extends Component {
   }
 
   render() {
-    return `<section class="tab-content weather-favorite">Favorite targets</section>`;
+    return `<section class="tab-content weather-favorite"></section>`;
   }
 }
