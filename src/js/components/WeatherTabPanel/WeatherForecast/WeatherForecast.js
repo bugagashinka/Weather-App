@@ -65,6 +65,10 @@ export default class WeatherForecast extends Component {
     return weekForecast.slice(0).join("");
   }
 
+  openStyleApply() {
+    console.log("WeatherForecast openStyleApply");
+  }
+
   render() {
     console.log(`render from ${this.constructor.name}`);
     // pre render
@@ -85,6 +89,7 @@ export default class WeatherForecast extends Component {
       weatherItems.push(this[itemRef]);
       weekForecast.push(
         `<WeatherForecastItem ref='${itemRef}'
+            onChangeStyle='${this.openStyleApply}'
             classList='${currentDate.getDay() === day ? "open" : ""}'
             temperature='${parseInt(dayWeather.main.temp)}'
             humidity='${dayWeather.main.humidity}'

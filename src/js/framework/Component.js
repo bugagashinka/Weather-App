@@ -84,7 +84,6 @@ export default class Component {
       );
     }
     this.state = Object.assign({}, this.state, newState);
-    console.log(this.state);
     console.log("Component | setState | before call rerender");
     vDomTree.get(this).children.forEach(childComp => {
       vDomTree.delete(childComp);
@@ -131,7 +130,7 @@ export default class Component {
         attributes: elementAttrs.filter(({ name }) => !name.startsWith("on")),
         eventHandlers: elementAttrs.reduce((handlers, { name, value }) => {
           if (name.startsWith("on")) {
-            handlers[name.toLowerCase().slice(2)] = value;
+            handlers[name.slice(2)] = value;
           }
           return handlers;
         }, {}),
@@ -184,6 +183,30 @@ export default class Component {
   _componentElementToHTML(protoElement, parent) {
     const props = this._attrToPropsFormat(protoElement.attributes);
     const comp = ProxyClass.createInstance(protoElement.tag, parent, props);
+
+    if (protoElement.eventHandlers) {
+      Object.keys(protoElement.eventHandlers).forEach(innerHandlerName => {
+        const outerHandlerName = new Function(
+          `return ${protoElement.eventHandlers[innerHandlerName]}`
+        )().name;
+        innerHandlerName =
+          innerHandlerName.charAt(0).toLowerCase() + innerHandlerName.slice(1);
+        if (typeof comp[innerHandlerName] !== "function")
+          throw new Error(
+            `${
+              comp.constructor.name
+            } component doesn't have a ${innerHandlerName} method`
+          );
+        const that = this;
+        comp[innerHandlerName] = new Proxy(comp[innerHandlerName].bind(comp), {
+          apply(innerHandler, context, args) {
+            that[outerHandlerName].bind(that)();
+            return innerHandler.apply(context, args);
+          }
+        });
+      });
+    }
+
     vDomTree.get(this).children.push(comp);
     this._checkRefProp(props, comp);
     return parent;
@@ -206,7 +229,6 @@ export default class Component {
       }
     });
 
-    //for manual prototype declaration in component with classList key
     if (protoElement.classList) {
       htmlElement.classList.add(...protoElement.classList);
     }
@@ -222,7 +244,10 @@ export default class Component {
         const handlerName = new Function(
           `return ${protoElement.eventHandlers[eventType]}`
         )().name;
-        htmlElement.addEventListener(eventType, this[handlerName].bind(this));
+        htmlElement.addEventListener(
+          eventType.toLowerCase(),
+          this[handlerName].bind(this)
+        );
       });
     }
 
