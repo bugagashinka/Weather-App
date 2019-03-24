@@ -15,6 +15,8 @@ export default class WeatherForecast extends Component {
   constructor(host, props) {
     super(host, props);
     this.state = {};
+    this.preSelectedDayItem = null;
+
     this.onServerResponse = this.onServerResponse.bind(this);
     WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
     WeatherDataService.getWeatherForecast();
@@ -65,8 +67,21 @@ export default class WeatherForecast extends Component {
     return weekForecast.slice(0).join("");
   }
 
-  openStyleApply() {
-    console.log("WeatherForecast openStyleApply");
+  itemStyleChangeHandler(selectedItemComp, selectedItemNode) {
+    if (selectedItemComp == this.preSelectedDayItem) return;
+
+    Array.from(this.preSelectedDayItem.host.children).forEach(item => {
+      if (item.classList.contains("open")) {
+        item.classList.toggle("open");
+      }
+    });
+
+    this.preSelectedDayItem = selectedItemComp;
+    selectedItemNode.classList.toggle("open");
+  }
+
+  afterRender() {
+    this.preSelectedDayItem = this[this.currentDayItemRef];
   }
 
   render() {
@@ -87,10 +102,14 @@ export default class WeatherForecast extends Component {
       const itemRef = `weatherForecastItem${weatherItems.length}`;
       this[itemRef] = Component.createRef();
       weatherItems.push(this[itemRef]);
+
+      const isCurrentDay = currentDate.getDay() === day;
+      if (isCurrentDay) this.currentDayItemRef = itemRef;
+
       weekForecast.push(
         `<WeatherForecastItem ref='${itemRef}'
-            onChangeStyle='${this.openStyleApply}'
-            classList='${currentDate.getDay() === day ? "open" : ""}'
+            onChangeStyle='${this.itemStyleChangeHandler}'
+            classList='${isCurrentDay ? "open" : ""}'
             temperature='${parseInt(dayWeather.main.temp)}'
             humidity='${dayWeather.main.humidity}'
             wind='${dayWeather.wind.speed}'

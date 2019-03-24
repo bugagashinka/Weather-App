@@ -77,7 +77,6 @@ export default class Component {
   afterRender() {}
 
   setState(newState) {
-    console.log("Component | setState |", this.state);
     if (!this.state) {
       throw new Error(
         `${this.constructor.name} component doesn't have state yet`
@@ -200,7 +199,7 @@ export default class Component {
         const that = this;
         comp[innerHandlerName] = new Proxy(comp[innerHandlerName].bind(comp), {
           apply(innerHandler, context, args) {
-            that[outerHandlerName].bind(that)();
+            that[outerHandlerName].bind(that)(...args);
             return innerHandler.apply(context, args);
           }
         });

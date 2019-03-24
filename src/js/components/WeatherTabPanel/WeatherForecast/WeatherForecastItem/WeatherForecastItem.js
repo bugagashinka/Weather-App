@@ -27,21 +27,12 @@ export default class WeatherForecastItem extends Component {
     this.currentWeather;
   }
 
-  // target.classList.toggle("open");
-
-  // console.log(e.currentTarget);
-  // this.isCurrentDay.classList.remove("open");
-  // this.isCurrentDay = e.currentTarget;
-  // e.currentTarget.classList.toggle("open");
   clickHandler(e) {
-    console.log("CLICK HANDLER WEATHERFORECASTITEM");
-    debugger;
-    this.changeStyle();
+    this.changeStyle(this, e.currentTarget);
   }
 
-  changeStyle() {
-    console.log("changeStyle WEATHERFORECASTITEM");
-  }
+  // params will be resend to parent changeStyle listener
+  changeStyle(currentItemComp, currentItemNode) {}
 
   render() {
     console.log(`Render from ${this.constructor.name} `);
