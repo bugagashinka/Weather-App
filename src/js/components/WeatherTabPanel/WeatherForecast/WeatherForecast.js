@@ -34,10 +34,8 @@ export default class WeatherForecast extends Component {
     // this.setState({});
   }
 
-  afterRender() {}
-
   buildForecastItemList(fiveDayForecast) {
-    const currentDate = new Date("2019-03-11 00:00:00"); //new Date();
+    const currentDate = new Date(); //new Date("2019-03-11 00:00:00");
     const currentTime = timeToOpenWeatherTime(currentDate);
 
     let _weekForecast = [];
@@ -45,28 +43,36 @@ export default class WeatherForecast extends Component {
       const dayWeather = weather.has(currentTime)
         ? weather.get(currentTime)
         : weather.values().next().value;
-
-      const itemRef = `weatherForecastItem${weatherItems.length}`;
-      this[itemRef] = Component.createRef();
-      weatherItems.push(this[itemRef]);
-
-      const isCurrentDay = currentDate.getDay() === day;
-      if (isCurrentDay) this.currentDayItemRef = itemRef;
-
       _weekForecast.push(
-        `<WeatherForecastItem ref='${itemRef}'
-            onChangeStyle='${this.itemStyleChangeHandler}'
-            classList='${isCurrentDay ? "open" : ""}'
-            temperature='${parseInt(dayWeather.main.temp)}'
-            humidity='${dayWeather.main.humidity}'
-            wind='${dayWeather.wind.speed}'
-            weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
-            pressure='${dayWeather.main.pressure}'
-            unit='metrical;'
-        />`
+        this.buildForecastItem(
+          currentDate,
+          day,
+          dayWeather,
+          weatherItems.length
+        )
       );
     }
     return _weekForecast.slice(0).join("");
+  }
+
+  buildForecastItem(currentDate, day, dayWeather, id) {
+    const itemRef = `weatherForecastItem${id}`;
+    this[itemRef] = Component.createRef();
+    weatherItems.push(this[itemRef]);
+
+    const isCurrentDay = currentDate.getDay() === day;
+    if (isCurrentDay) this.currentDayItemRef = itemRef;
+
+    return `<WeatherForecastItem ref='${itemRef}'
+        onChangeStyle='${this.itemStyleChangeHandler}'
+        classList='${isCurrentDay ? "open" : ""}'
+        temperature='${parseInt(dayWeather.main.temp)}'
+        humidity='${dayWeather.main.humidity}'
+        wind='${dayWeather.wind.speed}'
+        weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
+        pressure='${dayWeather.main.pressure}'
+        unit='metrical;'
+      />`;
   }
 
   itemStyleChangeHandler(selectedItemComp, selectedItemNode) {
