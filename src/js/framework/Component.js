@@ -151,9 +151,14 @@ export default class Component {
     });
   }
 
+  _removeComment(content) {
+    return content.replace(/(\/\*[^*]*\*\/)|(\/\/[^*\n\r]*)[\n\r]/g, "").trim();
+  }
+
   // Parse html element from string into dom nodes
   _parseHTMLString(content) {
-    return DOM_PARSER.parseFromString(content.trim(), PARSE_XML).firstChild;
+    return DOM_PARSER.parseFromString(this._removeComment(content), PARSE_XML)
+      .firstChild;
   }
 
   _attrToPropsFormat(attrs) {

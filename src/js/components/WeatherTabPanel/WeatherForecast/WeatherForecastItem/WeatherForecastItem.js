@@ -28,6 +28,8 @@ export default class WeatherForecastItem extends Component {
   }
 
   clickHandler(e) {
+    //This comments test
+    /* sonation logic for string representation of function */
     this.changeStyle(this, e.currentTarget);
   }
 
