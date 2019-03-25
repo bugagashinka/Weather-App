@@ -71,6 +71,9 @@ export default class Component {
   _afterRender() {
     if (this.constructor.name === rootComponent) {
       AppState.update(COMPONENT_MOUNTED_EVENT);
+    } else if (isReRender) {
+      this.afterRender();
+      this.isReRender = !isReRender;
     }
   }
 
@@ -89,7 +92,7 @@ export default class Component {
     });
     isReRender = !isReRender;
     this._render();
-    isReRender = !isReRender;
+    this._afterRender();
   }
 
   static createObject(plainObject) {
