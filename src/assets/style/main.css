@@ -61,12 +61,44 @@ html {
   filter: blur(8px);
 }
 .weather-target {
+  position: relative;
   height: 70%;
   border-radius: 5px 5px 0 0;
   -webkit-background-size: 110%;
   -moz-background-size: 110%;
   -o-background-size: 110%;
   background-size: 110%;
+}
+
+.location {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  margin: 25px;
+  font-weight: 500;
+}
+.loc {
+  padding: 5px;
+}
+.location {
+  color: #fff;
+  text-transform: uppercase;
+  text-align: right;
+}
+.loc-icon {
+  font-size: 5em;
+}
+.favorite-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 25px;
+  border: none;
+  cursor: pointer;
+  font-size: 2em;
+  color: #fff;
+  outline: none;
+  background: none;
 }
 
 /* Weather component */
@@ -157,7 +189,7 @@ html {
   flex: 3;
 }
 .item-icon {
-  font-size: 1.5em;
+  font-size: 2em;
 }
 .item-unit {
   font-size: 0.7em;
@@ -173,8 +205,7 @@ html {
   text-transform: lowercase;
 }
 .open .item-unit {
-  font-size: 0.5em;
-  vertical-align: top;
+  font-size: 0.7em;
 }
 .open .item-temp {
   font-size: 6em;
@@ -183,7 +214,7 @@ html {
   font-size: 5em;
 }
 .item-temp {
-  font-size: 1.3em;
+  font-size: 1.5em;
 }
 .item-detail,
 .item-base {
@@ -200,7 +231,6 @@ html {
 .open .detail-weather {
   display: initial;
   padding: 6px;
-  line-height: 1.6em;
 }
 .open .item-base {
   flex-direction: row-reverse;

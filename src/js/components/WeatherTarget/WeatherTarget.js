@@ -13,10 +13,15 @@ export default class WeatherTarget extends Component {
       `<section class="weather-target">
           <SearchBar/>
           <div class="location">
-            <span class="loc-city"></span>
-            <span class="loc-coordinate"></span>
-            <span class="loc-date"></span>
-          </div>
+            <div class="loc loc-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="loc loc-city">Florida, usa</div>
+            <div class="loc loc-date">20:15 pm</div>
+        </div>
+        <button class="favorite-button">
+          <i class="far fa-star"></i>
+        </button>
       </section>`
     ];
   }
