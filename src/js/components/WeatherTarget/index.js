@@ -1,1 +1,1 @@
-export { default as WeatherTarget } from "./WeatherTarget";
+export { default as WeatherTarget } from './WeatherTarget';

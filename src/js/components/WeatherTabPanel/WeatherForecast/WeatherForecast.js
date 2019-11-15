@@ -1,100 +1,131 @@
-import Component from "../../../framework/Component";
-import { WeatherForecastItem } from "./WeatherForecastItem";
-import WeatherDataService from "../../../services/WeatherDataService";
-import { classMap } from "../../../utils/ProxyClass";
+import Component from '../../../framework/Component';
+import { WeatherForecastItem } from './WeatherForecastItem';
+import weatherDataService from '../../../services/WeatherDataService';
+import AppState from '../../../services/AppState';
+import { registerComponent } from '../../../utils/ProxyClass';
+import { LIST_LOC_EVENT, UNITS_CHANGE_EVENT } from '../../../utils/const';
 import {
-  getDayNameById,
+  TEMP_SYS,
   timeToOpenWeatherTime,
-  getWeatherByDay
-} from "../../../utils/utils.js";
-
-let weekForecast = [];
-const weatherItems = [];
+  getWeatherByDay,
+  getCurrentDayIndex,
+} from '../../../utils/utils';
 
 export default class WeatherForecast extends Component {
   constructor(host, props) {
     super(host, props);
-    this.state = {};
     this.preSelectedDayItem = null;
-
-    this.onServerResponse = this.onServerResponse.bind(this);
-    WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
-    WeatherDataService.getWeatherForecast();
+    this.fiveDayForecast = null;
   }
 
-  onServerResponse(weatherData) {
-    let fiveDayForecast = getWeatherByDay(weatherData);
-    weekForecast = this.buildForecastItemList(fiveDayForecast);
-    this.setState({});
+  init() {
+    this.initState({ weekForecast: [] });
+    this.weatherItems = [];
+    this.units = TEMP_SYS.METRIC;
+    AppState.watch(LIST_LOC_EVENT, this.getWeather.bind(this));
+    AppState.watch(UNITS_CHANGE_EVENT, this.unitsChanged.bind(this));
+
+    // Subscribes for 5 days weather forecast
+    this.onForecastServerResponse = this.onForecastServerResponse.bind(this);
+    weatherDataService.subscribeForWeatherForecast(this.onForecastServerResponse);
+
+    // Subscribes for current weather forecast
+    this.onCurrentServerResponse = this.onCurrentServerResponse.bind(this);
+    weatherDataService.subscribeForCurrentWeather(this.onCurrentServerResponse);
+  }
+
+  unitsChanged(newUnits) {
+    this.units = newUnits;
+  }
+
+  onCurrentServerResponse(currentWeather) {
+    const currentDate = new Date();
+    const openWeatherCurrentTime = timeToOpenWeatherTime(currentDate);
+    const currentDayWeather = this.fiveDayForecast.get(getCurrentDayIndex());
+
+    if (currentDayWeather) {
+      const currentTimeWeather = { ...currentWeather, dt_txt: currentDate.toUTCString() };
+      // put current time weather instead current time from week forecast
+      currentDayWeather[openWeatherCurrentTime] = currentTimeWeather;
+    }
+    this.setState({
+      weekForecast: this.buildForecastItemList(),
+    });
+  }
+
+  onForecastServerResponse(weatherData) {
+    this.fiveDayForecast = getWeatherByDay(weatherData);
+  }
+
+  async getWeather(location = null) {
+    weatherDataService.getWeather(location);
   }
 
   beforeRender() {
-    console.log(`${this.constructor.name} | Before render `);
-    // weekForecast = this.buildForecastItemList();
-    // this.setState({});
+    super.beforeRender();
   }
 
-  buildForecastItemList(fiveDayForecast) {
-    const currentDate = new Date(); //new Date("2019-03-11 00:00:00");
-    const currentTime = timeToOpenWeatherTime(currentDate);
+  buildForecastItemList() {
+    const currentTime = timeToOpenWeatherTime(new Date());
 
     let _weekForecast = [];
-    for (let [day, weather] of fiveDayForecast) {
-      const dayWeather = weather.has(currentTime)
-        ? weather.get(currentTime)
-        : weather.values().next().value;
+    for (let [day, weather] of this.fiveDayForecast) {
       _weekForecast.push(
         this.buildForecastItem(
-          currentDate,
-          day,
-          dayWeather,
-          weatherItems.length
-        )
+          getCurrentDayIndex() === day,
+          currentTime,
+          weather,
+          this.weatherItems.length,
+        ),
       );
     }
-    return _weekForecast.slice(0).join("");
+    return _weekForecast.join('');
   }
 
-  buildForecastItem(currentDate, day, dayWeather, id) {
+  buildForecastItem(isCurrentDay, currentTime, dayWeather, id) {
     const itemRef = `weatherForecastItem${id}`;
     this[itemRef] = Component.createRef();
-    weatherItems.push(this[itemRef]);
+    this.weatherItems.push(this[itemRef]);
 
-    const isCurrentDay = currentDate.getDay() === day;
     if (isCurrentDay) this.currentDayItemRef = itemRef;
-
-    return `<WeatherForecastItem ref='${itemRef}'
-        onChangeStyle='${this.itemStyleChangeHandler}'
-        classList='${isCurrentDay ? "open" : ""}'
-        temperature='${parseInt(dayWeather.main.temp)}'
-        humidity='${dayWeather.main.humidity}'
-        wind='${dayWeather.wind.speed}'
-        weekDay='${getDayNameById(new Date(dayWeather.dt_txt).getDay())}'
-        pressure='${dayWeather.main.pressure}'
-        unit='metrical;'
+    return `
+      <WeatherForecastItem ref="${itemRef}"
+        onChangeStyle="${this.itemStyleChangeHandler}"
+        classList="${isCurrentDay ? 'open' : ''}"
+        data="${Component.createObject(dayWeather)}"
+        time="${currentTime}"
+        unit="${this.units}"
       />`;
   }
 
-  itemStyleChangeHandler(selectedItemComp, selectedItemNode) {
+  itemStyleChangeHandler(selectedItemComp) {
     if (selectedItemComp == this.preSelectedDayItem) return;
-    Array.from(this.preSelectedDayItem.host.children).forEach(item => {
-      if (item.classList.contains("open")) {
-        item.classList.toggle("open");
+
+    ['front', 'back', 'top', 'bottom'].forEach((face) => {
+      if (this.preSelectedDayItem[face]) {
+        this.preSelectedDayItem[face].classList.toggle('open');
+      }
+      if (selectedItemComp[face]) {
+        selectedItemComp[face].classList.toggle('open');
       }
     });
+    selectedItemComp.cube.parentNode.classList.toggle('open');
+    this.preSelectedDayItem.cube.parentNode.classList.remove('open');
     this.preSelectedDayItem = selectedItemComp;
-    selectedItemNode.classList.toggle("open");
   }
 
   afterRender() {
-    this.preSelectedDayItem = this[this.currentDayItemRef];
+    if (this.currentDayItemRef) {
+      this.preSelectedDayItem = this[this.currentDayItemRef];
+    }
   }
 
   render() {
-    return `<section class="tab-content weather-forecast">
-      ${weekForecast}
-    </section>`;
+    return `
+      <section class="tab-content weather-forecast">
+        ${this.state.weekForecast}
+      </section>`;
   }
 }
 
-classMap(WeatherForecastItem);
+registerComponent(WeatherForecastItem);

@@ -1,1 +1,1 @@
-export { default as WeatherTabPanel } from "./WeatherTabPanel";
+export { default as WeatherTabPanel } from './WeatherTabPanel';

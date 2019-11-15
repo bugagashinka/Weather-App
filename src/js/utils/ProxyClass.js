@@ -1,20 +1,21 @@
-const _classMap = {};
+const classMap = {};
 
-export const classMap = (...entityList) => {
-  entityList.forEach(entity => {
-    _classMap[entity.name] = entity;
+export const registerComponent = (...entityList) => {
+  entityList.forEach((entity) => {
+    classMap[entity.name] = entity;
   });
 };
 
 class ProxyClass {
-  createInstance(className, ...params) {
-    return typeof className === "function"
+  static createInstance(className, ...params) {
+    return typeof className === 'function'
       ? new className(...params)
-      : new _classMap[className](...params);
+      : new classMap[className](...params);
   }
 
-  isClass(className) {
-    return typeof className === "function" ? true : _classMap[className];
+  static isClass(className) {
+    const isFunction = typeof className === 'function';
+    return isFunction || classMap[className] || false;
   }
 }
-export default new ProxyClass();
+export default ProxyClass;

@@ -1,22 +1,19 @@
-import Component from "../../../../framework/Component";
+import Component from '../../../../framework/Component';
 
 export default class Tab extends Component {
-  constructor(host, props) {
-    super(host, props);
-  }
-
   render() {
-    console.log("afro", this.props.checked);
     return [
       `<input id="${this.props.id}" 
         class="tab-radio" 
         type="radio" 
-        name="tabs" 
-        ${this.props.checked === "checked" ? "checked='checked'" : ""}
-        />`,
+        name="tab" 
+        ${this.props.checked === 'checked' ? "checked='checked'" : ''}
+      />`,
+      `<i class="${this.props.class} tab-icon"></i>`,
       `<label for="${this.props.id}"
-        class="weather-tab fav-tab">${this.props.title}
-        </label>`
+        class="weather-tab 
+        ${this.props.id}">${this.props.title}
+      </label>`,
     ];
   }
 }

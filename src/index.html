@@ -17,7 +17,29 @@
   </head>
 
   <body>
-    <main id="app" class="container"></main>
+    <main id="container" class="container"></main>
+
+    <script
+      type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9ciuNYlJDSM-WozYWmbFF94hBNbhcxQk&libraries=places&language=en"
+    ></script>
+
+    <script>
+      function initAutocomplete(onPlaceChanged) {
+        const input = document.getElementById('search-field');
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+          types: ['(cities)'],
+        });
+        google.maps.event.addListener(autocomplete, 'place_changed', function(e) {
+          const location = autocomplete.getPlace().geometry.location;
+          onPlaceChanged({
+            lat: location.lat(),
+            lng: location.lng(),
+          });
+        });
+      }
+    </script>
+
     <script src="./js/index.js"></script>
   </body>
 </html>

@@ -1,11 +1,19 @@
-import ProxyClass from "../utils/ProxyClass";
-import AppState from "../services/AppState";
-import { isString } from "../utils/utils";
+import ProxyClass from '../utils/ProxyClass';
+import AppState from '../services/AppState';
+import { isString } from '../utils/utils';
+import { KeyCode } from '../utils/const';
 
-const PARSE_XML = "text/xml";
-const TEXT_NODE = "#text";
+const PARSE_XML = 'text/xml';
+const TEXT_NODE = '#text';
 const DOM_PARSER = new DOMParser();
-const COMPONENT_MOUNTED_EVENT = "COMPONENT_MOUNTED";
+const COMPONENT_MOUNTED_EVENT = 'COMPONENT_MOUNTED';
+const HANDLER_ATTR_NAME_PREFIX = 'on';
+
+const PROTO_TAG_PROPERTY = 'tag';
+const PROTO_HANDLERS_PROPERTY = 'eventHandlers';
+const PROTO_CONTENT_PROPERTY = 'content';
+const PROTO_ATTRIBUTES_PROPERTY = 'attributes';
+const PROTO_CHILDREN_PROPERTY = 'children';
 
 let vDomTree = new Map();
 let isReRender = false;
@@ -13,6 +21,45 @@ let rootComponent;
 
 export default class Component {
   constructor(host, props = {}) {
+    if (this.constructor == Component) {
+      throw TypeError(
+        `Class '${this.constructor.name}' abstract and cannot be instantiated directly`,
+      );
+    }
+    /*
+    const proxyThis = new Proxy(this, {
+      set(target, prop, value) {
+        console.log("set:", target, prop, value);
+        if (value === "createRef2v") {
+          value = function _createRef(comp, ref) {
+            // comp[prop] = ref;
+          };
+        }
+        target[prop] = value;
+        return true;
+      },
+      get(target, prop) {
+        console.log("get:", target, prop);
+        if (
+          typeof target[prop] == "function" &&
+          target[prop].name == "_createRef"
+        ) {
+          debugger;
+          return target[prop];
+        }
+        return target[prop];
+      }
+    });
+
+    proxyThis.host = host;
+    proxyThis.props = props;
+    proxyThis.init();
+    proxyThis.beforeRender();
+    proxyThis._render();
+    proxyThis._afterRender();
+    return proxyThis;
+    */
+
     this.host = host;
     this.props = props;
     this.init();
@@ -23,9 +70,12 @@ export default class Component {
 
   init() {}
 
-  beforeRender() {}
+  beforeRender() {
+    // console.info(`Before render | ${this.constructor.name}`);
+  }
 
   _render() {
+    //Content contain String || [String]. String consist from html tags and custom component tags
     let content = this.render();
 
     if (isString(content)) {
@@ -33,6 +83,7 @@ export default class Component {
     }
 
     if (!vDomTree.has(this)) {
+      //Memorizing root component, after mounted it into document will be initiated 'afterRender'
       if (!vDomTree.size) {
         rootComponent = this.constructor.name;
       }
@@ -41,17 +92,18 @@ export default class Component {
     }
 
     content
-      .map(contentItem => {
+      .map((contentItem) => {
         return isString(contentItem)
           ? this._htmlElementToVirtualDomPrototype(
-              this._parseHTMLString(contentItem)
+              this._parseStringIntoHtmlElement(contentItem),
             )
           : contentItem;
       })
-      .map(prototypeItem =>
-        this._vDomPrototypeElementToHtmlElement(prototypeItem)
+      .map((prototypeItem) =>
+        //the result array contains DOM elements
+        this._vDomPrototypeElementToHtmlElement(prototypeItem),
       )
-      .forEach(htmlElement => {
+      .forEach((htmlElement) => {
         if (isReRender && vDomTree.get(this).componentNode) {
           const oldHtmlElementNode = vDomTree.get(this).componentNode;
           oldHtmlElementNode.replaceWith(htmlElement);
@@ -62,41 +114,49 @@ export default class Component {
       });
   }
 
-  /* @returns {string|[string|HTMLElement|Component]} */
+  clear() {}
+
   render() {
-    return "OMG! They wanna see me!!!!!! Aaaaaa";
+    // console.info(`Render | ${this.constructor.name}`);
   }
 
   //notify all components, when first/root component rendered and attached to the document
   _afterRender() {
+    // console.info(`After render | ${this.constructor.name}`);
     if (this.constructor.name === rootComponent) {
       AppState.update(COMPONENT_MOUNTED_EVENT);
     } else if (isReRender) {
       this.afterRender();
-      this.isReRender = !isReRender;
     }
   }
 
   afterRender() {}
 
+  initState(state) {
+    this.state = { ...state };
+  }
+
   setState(newState) {
     if (!this.state) {
-      throw new Error(
-        `${this.constructor.name} component doesn't have state yet`
-      );
+      throw new Error(`${this.constructor.name} component doesn't have state yet`);
     }
-    this.state = Object.assign({}, this.state, newState);
-    console.log("Component | setState | before call rerender");
-    vDomTree.get(this).children.forEach(childComp => {
+    this.state = { ...this.state, ...newState };
+    this.beforeRender();
+
+    vDomTree.get(this).children.forEach((childComp) => {
+      childComp.clear();
       vDomTree.delete(childComp);
     });
+    vDomTree.get(this).children.length = 0;
+
     isReRender = !isReRender;
     this._render();
     this._afterRender();
+    isReRender = !isReRender;
   }
 
   static createObject(plainObject) {
-    return "object" + JSON.stringify(plainObject).replace(/"/g, "&quot;");
+    return 'object' + JSON.stringify(plainObject).replace(/"/g, '&quot;');
   }
 
   // This wheel use only for impose explicit property creation in component
@@ -111,64 +171,99 @@ export default class Component {
     //'this' - it's parent component
     if (!props.ref) return;
 
-    if (
-      typeof this[props.ref] != "function" &&
-      this[props.ref].name != "_createRef"
-    ) {
-      throw new Error("Use Component.createRef for create property");
+    if (typeof this[props.ref] != 'function' && this[props.ref].name != '_createRef') {
+      throw new Error('Use Component.createRef for create property');
     }
     this[props.ref] = this[props.ref](childComp);
+  }
+
+  static createRef2v() {
+    return 'createRef2v';
+    // return function _createRef2v() {};
+  }
+
+  _checkRef2vProp(props, childComp) {
+    if (!props.ref) return;
+
+    if (typeof this[props.ref] != 'function') {
+      throw new Error('Use arrow function');
+    }
+    this[props.ref]();
   }
 
   //Convert dom nodes to object literals (proto)
   _htmlElementToVirtualDomPrototype(htmlElement) {
     if (htmlElement.nodeName === TEXT_NODE) {
+      //handle newline characters and text nodes
       if (!htmlElement.data.trim().length) return null;
-      return { tag: TEXT_NODE, content: htmlElement.data.trim(), children: [] };
+      return {
+        [PROTO_TAG_PROPERTY]: TEXT_NODE,
+        [PROTO_CONTENT_PROPERTY]: htmlElement.data.trim(),
+        [PROTO_CHILDREN_PROPERTY]: [],
+      };
     } else {
       const elementAttrs = this._getElementAttr(htmlElement);
       return {
-        tag: `${htmlElement.nodeName}`,
-        attributes: elementAttrs.filter(({ name }) => !name.startsWith("on")),
-        eventHandlers: elementAttrs.reduce((handlers, { name, value }) => {
-          if (name.startsWith("on")) {
-            handlers[name.slice(2)] = value;
+        [PROTO_TAG_PROPERTY]: `${htmlElement.nodeName}`,
+        [PROTO_ATTRIBUTES_PROPERTY]: elementAttrs.filter(
+          ({ name }) => !name.startsWith(HANDLER_ATTR_NAME_PREFIX),
+        ),
+        [PROTO_HANDLERS_PROPERTY]: elementAttrs.reduce((handlers, { name, value }) => {
+          if (name.startsWith(HANDLER_ATTR_NAME_PREFIX)) {
+            handlers[name.slice(HANDLER_ATTR_NAME_PREFIX.length)] = value;
           }
           return handlers;
         }, {}),
-        children: htmlElement.childNodes.length
+        [PROTO_CHILDREN_PROPERTY]: htmlElement.childNodes.length
           ? Array.from(htmlElement.childNodes).map(
-              this._htmlElementToVirtualDomPrototype.bind(this)
+              this._htmlElementToVirtualDomPrototype.bind(this),
             )
-          : []
+          : [],
       };
     }
   }
 
   _getElementAttr(htmlElement) {
-    return Array.from(htmlElement.attributes).map((attr, index) => {
+    return Array.from(htmlElement.attributes).map(({ value, name }) => {
       return {
-        name: htmlElement.attributes[index].nodeName,
-        value: htmlElement.attributes[index].value
+        name,
+        value,
       };
     });
   }
 
-  _removeComment(content) {
-    return content.replace(/(\/\*[^*]*\*\/)|(\/\/[^*\n\r]*)[\n\r]/g, "").trim();
+  _removeSpaceSpecialCharacters(content) {
+    return content.replace(/\n?\n|\r|\s+/g, ' ').trim();
   }
 
-  // Parse html element from string into dom nodes
-  _parseHTMLString(content) {
-    return DOM_PARSER.parseFromString(this._removeComment(content), PARSE_XML)
-      .firstChild;
+  _removeComment(content) {
+    return content.replace(/(\/\*[^*]*\*\/)|(\/\/[^*\n\r]*)[\n\r]/g, '').trim();
+  }
+
+  // Parse html elements from string into DOM nodes
+  _parseStringIntoHtmlElement(content) {
+    const parsedDocument = DOM_PARSER.parseFromString(
+      this._removeSpaceSpecialCharacters(this._removeComment(content)),
+      PARSE_XML,
+    ).firstChild;
+    const parseError = parsedDocument.getElementsByTagName('parsererror')[0];
+    if (parseError) {
+      throw new Error(
+        `Component ${this.constructor.name} has markup ${
+          parseError.innerText.split(':')[1]
+        }.
+        Check the validity of the markup. Use double quotes for html attributes and single quotes for string conten of handlers methods.`,
+      );
+    }
+    return parsedDocument;
   }
 
   _attrToPropsFormat(attrs) {
     return attrs && attrs.length
       ? attrs.reduce((props, attr) => {
-          props[attr.name] = attr.value.startsWith("object")
-            ? JSON.parse(attr.value.replace("object", ""))
+          //'object' prefix is used to mark serialized into json plain js object
+          props[attr.name] = attr.value.startsWith('object')
+            ? JSON.parse(attr.value.replace('object', ''))
             : attr.value;
           return props;
         }, {})
@@ -177,7 +272,7 @@ export default class Component {
 
   _vDomPrototypeElementToHtmlElement(
     protoElement,
-    parent = document.createDocumentFragment()
+    parent = document.createDocumentFragment(),
   ) {
     if (ProxyClass.isClass(protoElement.tag)) {
       //It's a component
@@ -192,30 +287,35 @@ export default class Component {
     const comp = ProxyClass.createInstance(protoElement.tag, parent, props);
 
     if (protoElement.eventHandlers) {
-      Object.keys(protoElement.eventHandlers).forEach(innerHandlerName => {
+      Object.keys(protoElement.eventHandlers).forEach((innerHandlerName) => {
         const outerHandlerName = new Function(
-          `return ${protoElement.eventHandlers[innerHandlerName]}`
+          `return ${protoElement.eventHandlers[innerHandlerName]}`,
         )().name;
         innerHandlerName =
           innerHandlerName.charAt(0).toLowerCase() + innerHandlerName.slice(1);
-        if (typeof comp[innerHandlerName] !== "function")
+        if (typeof comp[innerHandlerName] !== 'function')
           throw new Error(
-            `${
-              comp.constructor.name
-            } component doesn't have a ${innerHandlerName} method`
+            `${comp.constructor.name} component doesn't have a ${innerHandlerName} method`,
           );
         const that = this;
         comp[innerHandlerName] = new Proxy(comp[innerHandlerName].bind(comp), {
           apply(innerHandler, context, args) {
             that[outerHandlerName].bind(that)(...args);
             return innerHandler.apply(context, args);
-          }
+          },
         });
       });
     }
-
-    vDomTree.get(this).children.push(comp);
     this._checkRefProp(props, comp);
+
+    if (props.ref2v) {
+      //reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
+      new Function('_this', `return ${props.ref2v.replace(/_this[0-9]*/g, '_this')}`)(
+        this,
+      )(comp);
+      // protoElement.attributes
+    }
+    vDomTree.get(this).children.push(comp);
     return parent;
   }
 
@@ -229,48 +329,67 @@ export default class Component {
       htmlElement.innerHTML = protoElement.content;
     }
 
-    // ensure following element properties are Array
-    ["classList", "attributes", "children"].forEach(item => {
+    // ensure that following prototype properties are Array
+    [PROTO_ATTRIBUTES_PROPERTY, PROTO_CHILDREN_PROPERTY].forEach((item) => {
       if (protoElement[item] && !Array.isArray(protoElement[item])) {
         protoElement[item] = [protoElement[item]];
       }
     });
-
+    /*
     if (protoElement.classList) {
       htmlElement.classList.add(...protoElement.classList);
     }
+    */
 
     if (protoElement.attributes) {
-      protoElement.attributes.forEach(attributeSpec => {
-        htmlElement.setAttribute(attributeSpec.name, attributeSpec.value);
+      protoElement.attributes.forEach((attributeSpec) => {
+        if (attributeSpec.name !== 'ref' || attributeSpec.name !== 'ref2v') {
+          htmlElement.setAttribute(attributeSpec.name, attributeSpec.value);
+        }
+
+        if (attributeSpec.name === 'ref') {
+          if (typeof this[attributeSpec.value] != 'function') {
+            throw new Error('Use arrow function');
+          }
+          this[attributeSpec.value] = this[attributeSpec.value](htmlElement);
+        }
+        if (attributeSpec.name === 'ref2v') {
+          //reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
+          new Function(
+            '_this',
+            `return ${attributeSpec.value.replace(/_this[0-9]*/g, '_this')}`,
+          )(this)(htmlElement);
+        }
       });
     }
 
     if (protoElement.eventHandlers) {
-      Object.keys(protoElement.eventHandlers).forEach(eventType => {
+      Object.keys(protoElement.eventHandlers).forEach((eventType) => {
         const handlerName = new Function(
-          `return ${protoElement.eventHandlers[eventType]}`
+          `return ${protoElement.eventHandlers[eventType]}`,
         )().name;
         htmlElement.addEventListener(
           eventType.toLowerCase(),
-          this[handlerName].bind(this)
+          this[handlerName].bind(this),
+          // handlerName.bind(this)
         );
       });
     }
 
     // process children
     if (protoElement.children) {
-      protoElement.children.forEach(childElement => {
+      protoElement.children.forEach((childElement) => {
         if (!childElement) return;
         const childHtmlElement = this._vDomPrototypeElementToHtmlElement(
           childElement,
-          htmlElement
+          htmlElement,
         );
         if (childHtmlElement !== htmlElement) {
           htmlElement.appendChild(childHtmlElement);
         }
       });
     }
+
     return htmlElement;
   }
 }

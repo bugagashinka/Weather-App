@@ -1,26 +1,48 @@
-import Component from "../../../framework/Component";
+import Component from '../../../framework/Component';
+import AppState from '../../../services/AppState';
+import { KeyCode } from '../../../utils/const';
 
-const ENTER_KEY = 13;
+export const SEARCH_EVENT = 'SEARCH_EVENT';
+
+const searchPlaceholderText = 'Search for city or coordinates';
+
 export default class SearchBar extends Component {
-  constructor(host, props) {
-    super(host, props);
+  init() {
+    this.searchField = null;
+    this.searchValue = this.props.value;
+  }
+
+  inputHandler(e) {
+    this.searchValue = `${e.target.value}`.toUpperCase();
+    e.target.value = this.searchValue;
+  }
+
+  clickHandler({ target }) {
+    target.select();
   }
 
   keyPressHandler(e) {
-    if (e.keyCode == ENTER_KEY) {
-      console.log(`SEND REQUEST`);
-      return;
+    if (e.keyCode === KeyCode.ENTER_KEY) {
+      AppState.update(SEARCH_EVENT, { place: this.searchValue });
     }
-    console.log(e.target.value);
+  }
+
+  afterRender() {
+    this.searchField.value = this.searchValue;
   }
 
   render() {
-    return `<input 
+    super.render();
+    return `
+      <input 
         id="search-field" 
         type="text"
-        onKeyPress='${this.keyPressHandler}'
+        ref2v='${(ref) => (this.searchField = ref)}'
+        onClick='${this.clickHandler}'
+        onInput='${this.inputHandler}'
+        onKeypress='${this.keyPressHandler}'
         class="input-search" 
-        placeholder="Search for city or coordinates" 
+        placeholder='${searchPlaceholderText}' 
       />`;
   }
 }

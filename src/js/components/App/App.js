@@ -1,19 +1,27 @@
-import Component from "../../framework/Component";
-import { WeatherTarget } from "../WeatherTarget";
-import { WeatherTabPanel } from "../WeatherTabPanel";
-import { classMap } from "../../utils/ProxyClass";
+import Component from '../../framework/Component';
+import { WeatherTarget } from '../WeatherTarget';
+import { WeatherTabPanel } from '../WeatherTabPanel';
+import { registerComponent } from '../../utils/ProxyClass';
+import { WeatherForecastWindow } from '../WeatherForecastWindow';
+import nyc from '../../../assets/img/nyc,usa.jpg';
 
 export default class App extends Component {
-  constructor(host) {
-    super(host);
+  init() {
+    this.backgroundImg = null;
+  }
+
+  afterRender() {
+    this.backgroundImg.style.backgroundImage = `url(${nyc})`;
   }
 
   render() {
-    return [
-      '<div class="bg-image"></div>',
-      "<WeatherTarget />",
-      "<WeatherTabPanel/>"
-    ];
+    const background = `
+      <div ref2v="${(ref) => {
+        this.backgroundImg = ref;
+      }}" class="bg-image">
+      </div>`;
+
+    return [background, '<WeatherForecastWindow />'];
   }
 }
-classMap(WeatherTarget, WeatherTabPanel);
+registerComponent(WeatherTarget, WeatherTabPanel, WeatherForecastWindow);
