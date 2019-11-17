@@ -1,5 +1,7 @@
 import App from './components/App';
-import nyc from '../assets/img/nyc,usa.jpg';
+import '../assets/style/weather-icons.min.css';
+import '../assets/style/main.css';
+import '../assets/style/normalize.css';
 import '@babel/polyfill';
 
 new App(document.getElementById('container'));
