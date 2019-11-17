@@ -1,4 +1,5 @@
 const subsList = new Set();
+const GEOLOCATION_ENDPOINT = 'https://geolocation-db.com/json/';
 
 class LocationDetectService {
   constructor() {
@@ -9,7 +10,7 @@ class LocationDetectService {
   }
 
   _getLocationByIp() {
-    this.request = fetch(`http://geolocation-db.com/json/`)
+    this.request = fetch(GEOLOCATION_ENDPOINT)
       .then((res) => res.json())
       .then((data) => `${data.city},${data.country_code}`)
       .catch((error) => console.error(error));

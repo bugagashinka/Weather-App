@@ -3,7 +3,7 @@ import LocationDetectService from './LocationDetectService';
 const subsForWeatherForecast = new Set();
 const subsForCurrentWeather = new Set();
 
-const ENDPOINT = 'http://api.openweathermap.org/data/2.5';
+const ENDPOINT = 'https://api.openweathermap.org/data/2.5';
 const CURRENT_ENDPOINT = '/weather';
 const FORECAST_ENDPOINT = '/forecast';
 const API_KEY = '73852c63fb2ae78cedf33850c175df87';
