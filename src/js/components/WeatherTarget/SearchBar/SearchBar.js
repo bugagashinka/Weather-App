@@ -37,12 +37,14 @@ export default class SearchBar extends Component {
       <input 
         id="search-field" 
         type="text"
-        ref2v='${(ref) => (this.searchField = ref)}'
-        onClick='${this.clickHandler}'
-        onInput='${this.inputHandler}'
-        onKeypress='${this.keyPressHandler}'
+        ref2v="${(ref, comp) => {
+          comp.searchField = ref;
+        }}"
+        onClick="${this.clickHandler}"
+        onInput="${this.inputHandler}"
+        onKeypress="${this.keyPressHandler}"
         class="input-search" 
-        placeholder='${searchPlaceholderText}' 
+        placeholder="${searchPlaceholderText}" 
       />`;
   }
 }

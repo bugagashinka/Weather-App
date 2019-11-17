@@ -52,7 +52,7 @@ class Temperature extends Component {
         <sup class="item item-unit">${'&#176;'}</sup>
         <button 
           class="item-unit-control"
-          onClick='${this.unitsClickHandler}'>
+          onClick="${this.unitsClickHandler}">
           ${isMetricSystem ? 'C' : 'F'}  
         </button>
       </span>`;

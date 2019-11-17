@@ -7,7 +7,7 @@ import ObjectStorage from '../../utils/ObjectStorage';
 import ArrayStorage from '../../utils/ArrayStorage';
 import { timeForLocationOffset } from '../../utils/utils';
 import WeatherDataService from '../../services/WeatherDataService';
-import nyc from '../../../assets/img/nyc,usa.jpg';
+import nyc from '../../../assets/img/nyc_usa.jpg';
 import { registerComponent } from '../../utils/ProxyClass';
 import { STORAGE_SEARCH_LIST, STORAGE_FAV_LIST } from '../../utils/const';
 
@@ -106,26 +106,26 @@ export default class WeatherTarget extends Component {
 
     return `
       <section 
-        ref2v='${(ref) => {
-          this.targetWeatherSection = ref;
+        ref2v='${(ref, comp) => {
+          comp.targetWeatherSection = ref;
         }}'
         class="weather-target" 
         style="background-image: url(${nyc});">
-          <SearchBar value='${
+          <SearchBar value="${
             this.state.currentLocation ? this.state.currentLocation : ''
-          }'/>
+          }"/>
           ${
             this.state.currentLocation
               ? `${currentLocation}
                   <FavoriteLocation
-                    ref2v='${(ref) => {
-                      this.favLocationCheckbox = ref;
-                    }}'
-                    checked='${ArrayStorage.isExist(
+                    ref2v="${(ref, comp) => {
+                      comp.favLocationCheckbox = ref;
+                    }}"
+                    checked="${ArrayStorage.isExist(
                       STORAGE_FAV_LIST,
                       WeatherTarget.normalizeCurrentLocation(this.state.currentLocation),
-                    )}'
-                    onChangeStatus='${this.favoriteStatusChange}'
+                    )}"
+                    onChangeStatus="${this.favoriteStatusChange}"
                   />`
               : ''
           } 

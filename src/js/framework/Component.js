@@ -1,7 +1,6 @@
 import ProxyClass from '../utils/ProxyClass';
 import AppState from '../services/AppState';
 import { isString } from '../utils/utils';
-import { KeyCode } from '../utils/const';
 
 const PARSE_XML = 'text/xml';
 const TEXT_NODE = '#text';
@@ -15,53 +14,23 @@ const PROTO_CONTENT_PROPERTY = 'content';
 const PROTO_ATTRIBUTES_PROPERTY = 'attributes';
 const PROTO_CHILDREN_PROPERTY = 'children';
 
-let vDomTree = new Map();
+const vDomTree = new Map();
 let isReRender = false;
 let rootComponent;
 
 export default class Component {
   constructor(host, props = {}) {
-    if (this.constructor == Component) {
+    if (this.constructor === Component) {
       throw TypeError(
         `Class '${this.constructor.name}' abstract and cannot be instantiated directly`,
       );
     }
-    /*
-    const proxyThis = new Proxy(this, {
-      set(target, prop, value) {
-        console.log("set:", target, prop, value);
-        if (value === "createRef2v") {
-          value = function _createRef(comp, ref) {
-            // comp[prop] = ref;
-          };
-        }
-        target[prop] = value;
-        return true;
-      },
-      get(target, prop) {
-        console.log("get:", target, prop);
-        if (
-          typeof target[prop] == "function" &&
-          target[prop].name == "_createRef"
-        ) {
-          debugger;
-          return target[prop];
-        }
-        return target[prop];
-      }
-    });
-
-    proxyThis.host = host;
-    proxyThis.props = props;
-    proxyThis.init();
-    proxyThis.beforeRender();
-    proxyThis._render();
-    proxyThis._afterRender();
-    return proxyThis;
-    */
 
     this.host = host;
     this.props = props;
+
+    this._normalizeMethodForSerialization();
+
     this.init();
     this.beforeRender();
     this._render();
@@ -70,12 +39,10 @@ export default class Component {
 
   init() {}
 
-  beforeRender() {
-    // console.info(`Before render | ${this.constructor.name}`);
-  }
+  beforeRender() {}
 
   _render() {
-    //Content contain String || [String]. String consist from html tags and custom component tags
+    // Content contain String || [String]. String consist from html tags and custom component tags
     let content = this.render();
 
     if (isString(content)) {
@@ -83,7 +50,7 @@ export default class Component {
     }
 
     if (!vDomTree.has(this)) {
-      //Memorizing root component, after mounted it into document will be initiated 'afterRender'
+      // Memorizing root component, after mounted it into document will be initiated 'afterRender'
       if (!vDomTree.size) {
         rootComponent = this.constructor.name;
       }
@@ -100,7 +67,7 @@ export default class Component {
           : contentItem;
       })
       .map((prototypeItem) =>
-        //the result array contains DOM elements
+        // the result array contains DOM elements
         this._vDomPrototypeElementToHtmlElement(prototypeItem),
       )
       .forEach((htmlElement) => {
@@ -116,11 +83,9 @@ export default class Component {
 
   clear() {}
 
-  render() {
-    // console.info(`Render | ${this.constructor.name}`);
-  }
+  render() {}
 
-  //notify all components, when first/root component rendered and attached to the document
+  // notify all components, when first/root component rendered and attached to the document
   _afterRender() {
     // console.info(`After render | ${this.constructor.name}`);
     if (this.constructor.name === rootComponent) {
@@ -156,22 +121,34 @@ export default class Component {
   }
 
   static createObject(plainObject) {
-    return 'object' + JSON.stringify(plainObject).replace(/"/g, '&quot;');
+    return `object${JSON.stringify(plainObject).replace(/"/g, '&quot;')}`;
   }
 
   // This wheel use only for impose explicit property creation in component
   static createRef() {
-    //return Declared (sub)Component with ref-property, as a value for parent component property created with 'createRef'
+    // return Declared (sub)Component with ref-property, as a value for parent component property created with 'createRef'
     return function _createRef(subComponent) {
       return subComponent;
     };
   }
 
+  _normalizeMethodForSerialization() {
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach((method) => {
+      if (typeof this[method] === 'function') {
+        this[method].toString = ((origin) => {
+          return () => {
+            return origin.replace(/"/g, "'");
+          };
+        })(this[method].toString());
+      }
+    });
+  }
+
   _checkRefProp(props, childComp) {
-    //'this' - it's parent component
+    // 'this' - it's parent component
     if (!props.ref) return;
 
-    if (typeof this[props.ref] != 'function' && this[props.ref].name != '_createRef') {
+    if (typeof this[props.ref] !== 'function' && this[props.ref].name !== '_createRef') {
       throw new Error('Use Component.createRef for create property');
     }
     this[props.ref] = this[props.ref](childComp);
@@ -185,16 +162,16 @@ export default class Component {
   _checkRef2vProp(props, childComp) {
     if (!props.ref) return;
 
-    if (typeof this[props.ref] != 'function') {
+    if (typeof this[props.ref] !== 'function') {
       throw new Error('Use arrow function');
     }
     this[props.ref]();
   }
 
-  //Convert dom nodes to object literals (proto)
+  // Convert dom nodes to object literals (proto)
   _htmlElementToVirtualDomPrototype(htmlElement) {
     if (htmlElement.nodeName === TEXT_NODE) {
-      //handle newline characters and text nodes
+      // handle newline characters and text nodes
       if (!htmlElement.data.trim().length) return null;
       return {
         [PROTO_TAG_PROPERTY]: TEXT_NODE,
@@ -252,7 +229,7 @@ export default class Component {
         `Component ${this.constructor.name} has markup ${
           parseError.innerText.split(':')[1]
         }.
-        Check the validity of the markup. Use double quotes for html attributes and single quotes for string conten of handlers methods.`,
+        Check the validity of the markup. Use double quotes for html attributes and single quotes for string content of handlers methods.`,
       );
     }
     return parsedDocument;
@@ -261,7 +238,7 @@ export default class Component {
   _attrToPropsFormat(attrs) {
     return attrs && attrs.length
       ? attrs.reduce((props, attr) => {
-          //'object' prefix is used to mark serialized into json plain js object
+          // 'object' prefix is used to mark serialized into json plain js object
           props[attr.name] = attr.value.startsWith('object')
             ? JSON.parse(attr.value.replace('object', ''))
             : attr.value;
@@ -275,10 +252,10 @@ export default class Component {
     parent = document.createDocumentFragment(),
   ) {
     if (ProxyClass.isClass(protoElement.tag)) {
-      //It's a component
+      // It's a component
       return this._componentElementToHTML(protoElement, parent);
     }
-    //It's not a component
+    // It's not a component
     return this._plainElementToHTML(protoElement, parent);
   }
 
@@ -288,6 +265,7 @@ export default class Component {
 
     if (protoElement.eventHandlers) {
       Object.keys(protoElement.eventHandlers).forEach((innerHandlerName) => {
+        // eslint-disable-next-line no-new-func
         const outerHandlerName = new Function(
           `return ${protoElement.eventHandlers[innerHandlerName]}`,
         )().name;
@@ -309,19 +287,20 @@ export default class Component {
     this._checkRefProp(props, comp);
 
     if (props.ref2v) {
-      //reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
-      new Function('_this', `return ${props.ref2v.replace(/_this[0-9]*/g, '_this')}`)(
-        this,
-      )(comp);
+      // reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
+      // eslint-disable-next-line no-new-func
+      new Function(`return ${props.ref2v.replace(/_this[0-9]*/g, 'comp')}`)
+        .call()
+        .call(null, comp, this);
       // protoElement.attributes
     }
     vDomTree.get(this).children.push(comp);
     return parent;
   }
 
-  _plainElementToHTML(protoElement, parent) {
+  _plainElementToHTML(protoElement) {
     const htmlElement =
-      protoElement.tag == TEXT_NODE
+      protoElement.tag === TEXT_NODE
         ? document.createTextNode(protoElement.content)
         : document.createElement(protoElement.tag);
 
@@ -335,43 +314,38 @@ export default class Component {
         protoElement[item] = [protoElement[item]];
       }
     });
-    /*
-    if (protoElement.classList) {
-      htmlElement.classList.add(...protoElement.classList);
-    }
-    */
 
     if (protoElement.attributes) {
       protoElement.attributes.forEach((attributeSpec) => {
-        if (attributeSpec.name !== 'ref' || attributeSpec.name !== 'ref2v') {
+        if (attributeSpec.name !== 'ref' && attributeSpec.name !== 'ref2v') {
           htmlElement.setAttribute(attributeSpec.name, attributeSpec.value);
         }
 
         if (attributeSpec.name === 'ref') {
-          if (typeof this[attributeSpec.value] != 'function') {
+          if (typeof this[attributeSpec.value] !== 'function') {
             throw new Error('Use arrow function');
           }
           this[attributeSpec.value] = this[attributeSpec.value](htmlElement);
         }
         if (attributeSpec.name === 'ref2v') {
-          //reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
-          new Function(
-            '_this',
-            `return ${attributeSpec.value.replace(/_this[0-9]*/g, '_this')}`,
-          )(this)(htmlElement);
+          // reconstruction 'function' from string and call from current sub-component ('this') with argument - component node
+          // eslint-disable-next-line no-new-func
+          new Function(`return ${attributeSpec.value.replace(/_this[0-9]*/g, 'comp')}`)
+            .call()
+            .call(null, htmlElement, this);
         }
       });
     }
 
     if (protoElement.eventHandlers) {
       Object.keys(protoElement.eventHandlers).forEach((eventType) => {
+        // eslint-disable-next-line no-new-func
         const handlerName = new Function(
           `return ${protoElement.eventHandlers[eventType]}`,
         )().name;
         htmlElement.addEventListener(
           eventType.toLowerCase(),
           this[handlerName].bind(this),
-          // handlerName.bind(this)
         );
       });
     }

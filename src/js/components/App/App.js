@@ -3,7 +3,7 @@ import { WeatherTarget } from '../WeatherTarget';
 import { WeatherTabPanel } from '../WeatherTabPanel';
 import { registerComponent } from '../../utils/ProxyClass';
 import { WeatherForecastWindow } from '../WeatherForecastWindow';
-import nyc from '../../../assets/img/nyc,usa.jpg';
+import nyc from '../../../assets/img/nyc_usa.jpg';
 
 export default class App extends Component {
   init() {
@@ -16,8 +16,8 @@ export default class App extends Component {
 
   render() {
     const background = `
-      <div ref2v="${(ref) => {
-        this.backgroundImg = ref;
+      <div ref2v="${(ref, comp) => {
+        comp.backgroundImg = ref;
       }}" class="bg-image">
       </div>`;
 

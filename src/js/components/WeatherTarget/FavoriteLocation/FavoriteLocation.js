@@ -16,6 +16,7 @@ export default class FavoriteLocation extends Component {
   clickHandler({ target }) {
     this.changeStatus((this.isChecked = !this.isChecked), target);
   }
+
   changeStatus(status, elementNode) {
     elementNode.classList.toggle(REGULAR_STAR_STYLE, status);
   }
@@ -23,15 +24,18 @@ export default class FavoriteLocation extends Component {
   uncheck() {
     this.favCheckboxNode.classList.toggle(REGULAR_STAR_STYLE, (this.isChecked = false));
   }
-  //class="favorite-button  ${this.props.classList}"
+
   render() {
+    super.render();
     return `
       <button
         class="favorite-button" 
         onClick='${this.clickHandler}'>
         <i class="far fa-star 
            ${this.props.checked === 'true' ? REGULAR_STAR_STYLE : DUMMY_STYLE_CLASS}"
-           ref2v='${(ref) => (this.favCheckboxNode = ref)}'>
+           ref2v='${(ref, comp) => {
+             comp.favCheckboxNode = ref;
+           }}'>
         </i>
     </button>`;
   }

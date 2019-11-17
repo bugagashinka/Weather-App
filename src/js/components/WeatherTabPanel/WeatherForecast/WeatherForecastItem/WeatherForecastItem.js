@@ -145,8 +145,8 @@ export default class WeatherForecastItem extends Component {
       <div class="scene ${this.state.classList}">
         <div
           class="cube show-${this.currentFace}"
-          ref2v="${(ref) => {
-            this.cube = ref;
+          ref2v="${(ref, comp) => {
+            comp.cube = ref;
           }}"
           onClick="${this.cubeClickHandler}">
             ${this.buildForecastItem()}
