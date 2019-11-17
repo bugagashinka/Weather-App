@@ -14,8 +14,7 @@ class ProxyClass {
   }
 
   static isClass(className) {
-    const isFunction = typeof className === 'function';
-    return isFunction || classMap[className] || false;
+    return classMap[className];
   }
 }
 export default ProxyClass;
