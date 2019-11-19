@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProductionMode = process.env.NODE_ENV === 'production';
 
@@ -16,7 +16,7 @@ const config = {
     rules: [
       {
         test: /\.(sa|sc|c)ss$/,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
@@ -49,12 +49,9 @@ const config = {
       title: 'Weather forecast',
       template: './src/index.html',
     }),
-    new CopyWebpackPlugin([
-      {
-        from: './src/assets/img',
-        to: './',
-      },
-    ]),
+    new MiniCssExtractPlugin({
+      filename: isProductionMode ? '[name].[hash].css' : '[name].css',
+    }),
   ],
   mode: isProductionMode ? 'production' : 'development',
   optimization: {
