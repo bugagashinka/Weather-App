@@ -357,7 +357,6 @@ export default class Component {
           childElement,
           htmlElement,
         );
-        debugger;
         if (childHtmlElement !== htmlElement) {
           htmlElement.appendChild(childHtmlElement);
         }
