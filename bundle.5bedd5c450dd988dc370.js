@@ -10573,8 +10573,6 @@ function () {
 
           var childHtmlElement = _this4._vDomPrototypeElementToHtmlElement(childElement, htmlElement);
 
-          debugger;
-
           if (childHtmlElement !== htmlElement) {
             htmlElement.appendChild(childHtmlElement);
           }
