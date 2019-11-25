@@ -55,7 +55,7 @@ const config = {
   ],
   mode: isProductionMode ? 'production' : 'development',
   optimization: {
-    // We no not want to minimize our code.
+    // We no not want to minimize our code. FIXME
     minimize: false,
   },
   devtool: isProductionMode ? '' : 'cheap-module-eval-source-map',

@@ -46,10 +46,6 @@ export default class WeatherForecastItem extends Component {
     this.setState(data);
   }
 
-  /*   getCurrentWeather() {
-    this.currentWeather;
-  } */
-
   cubeClickHandler() {
     if (this[this.currentFace].classList.contains('open')) {
       if (this.timeCursor.length > faces.length) {

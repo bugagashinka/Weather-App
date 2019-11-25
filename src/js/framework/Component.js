@@ -87,7 +87,6 @@ export default class Component {
 
   // notify all components, when first/root component rendered and attached to the document
   _afterRender() {
-    // console.info(`After render | ${this.constructor.name}`);
     if (this.constructor.name === rootComponent) {
       AppState.update(COMPONENT_MOUNTED_EVENT);
     } else if (isReRender) {
@@ -156,7 +155,6 @@ export default class Component {
 
   static createRef2v() {
     return 'createRef2v';
-    // return function _createRef2v() {};
   }
 
   _checkRef2vProp(props, childComp) {
@@ -223,7 +221,7 @@ export default class Component {
       this._removeSpaceSpecialCharacters(this._removeComment(content)),
       PARSE_XML,
     ).firstChild;
-    const parseError = parsedDocument.getElementsByTagName('parsererror')[0];
+    const [parseError] = parsedDocument.getElementsByTagName('parsererror');
     if (parseError) {
       throw new Error(
         `Component ${this.constructor.name} has markup ${
@@ -252,7 +250,7 @@ export default class Component {
     parent = document.createDocumentFragment(),
   ) {
     if (ProxyClass.isClass(protoElement.tag)) {
-      // It's a component
+      // It's a component, return parent
       return this._componentElementToHTML(protoElement, parent);
     }
     // It's not a component
@@ -353,11 +351,13 @@ export default class Component {
     // process children
     if (protoElement.children) {
       protoElement.children.forEach((childElement) => {
+        // handle text nodes
         if (!childElement) return;
         const childHtmlElement = this._vDomPrototypeElementToHtmlElement(
           childElement,
           htmlElement,
         );
+        debugger;
         if (childHtmlElement !== htmlElement) {
           htmlElement.appendChild(childHtmlElement);
         }
