@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Weather App</title>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+  <link href="main.e99821615c2e23dce95f.css" rel="stylesheet"></head>
+
+  <body>
+    <main id="container" class="container"></main>
+
+    <script
+      type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9ciuNYlJDSM-WozYWmbFF94hBNbhcxQk&libraries=places&language=en"
+    ></script>
+
+    <script>
+      function initAutocomplete(onPlaceChanged) {
+        const input = document.getElementById('search-field');
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+          types: ['(cities)'],
+        });
+        google.maps.event.addListener(autocomplete, 'place_changed', function(e) {
+          const location = autocomplete.getPlace().geometry.location;
+          onPlaceChanged({
+            lat: location.lat(),
+            lng: location.lng(),
+          });
+        });
+      }
+    </script>
+  <script type="text/javascript" src="bundle.e99821615c2e23dce95f.js"></script></body>
+</html>
