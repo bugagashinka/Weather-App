@@ -7,10 +7,10 @@ export const registerComponent = (...entityList) => {
 };
 
 class ProxyClass {
-  static createInstance(className, ...params) {
+  static createInstance(ClassName, ...params) {
     return typeof className === 'function'
-      ? new className(...params)
-      : new classMap[className](...params);
+      ? new ClassName(...params)
+      : new classMap[ClassName](...params);
   }
 
   static isClass(className) {

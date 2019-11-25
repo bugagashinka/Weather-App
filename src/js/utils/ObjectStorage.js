@@ -7,7 +7,7 @@ class ObjectStorage extends Storage {
     if (!super.getItem(key)) {
       updateObject = objValue;
     } else {
-      const objValueKey = Object.keys(objValue)[0];
+      const [objValueKey] = Object.keys(objValue);
       updateObject = this.getObject(key);
       updateObject[objValueKey] = objValue[objValueKey];
     }

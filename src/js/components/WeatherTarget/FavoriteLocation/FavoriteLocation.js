@@ -4,12 +4,8 @@ const DUMMY_STYLE_CLASS = '';
 const REGULAR_STAR_STYLE = 'fas';
 
 export default class FavoriteLocation extends Component {
-  constructor(host, props) {
-    super(host, props);
-    this.isChecked = this.props.checked === 'true';
-  }
-
   init() {
+    this.isChecked = this.props.checked === 'true';
     this.favCheckboxNode = null;
   }
 
